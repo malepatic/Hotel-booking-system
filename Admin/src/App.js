@@ -6,9 +6,10 @@ import UserLogin from "./components/UserLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard";
 import RoomManagement from "./pages/RoomManagement";
-import OrderManagement from "./pages/OrderManagement";
+import OrderManagement from "./pages/AdminOrders";
 import UserManagement from "./pages/UserManagement";
 import AdminRegistration from "./pages/AdminRegistration";
+import AdminOrders from "./pages/AdminOrders";
 
 const App = () => {
   const isAuthenticated = () => !!localStorage.getItem("token");
@@ -64,7 +65,7 @@ const App = () => {
           path="/admin/orders"
           element={
             isAuthenticated() && getRole() === "admin" ? (
-              <OrderManagement />
+              <AdminOrders />
             ) : (
               <Navigate to="/login" />
             )
@@ -86,7 +87,7 @@ const App = () => {
           path="/user/dashboard"
           element={
             isAuthenticated() && getRole() === "user" ? (
-              <UserDashboard />
+              <UserDashboard/>
             ) : (
               <Navigate to="/login" />
             )

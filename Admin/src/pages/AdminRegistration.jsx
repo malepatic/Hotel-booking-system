@@ -94,7 +94,7 @@ const AdminRegistration = () => {
     <StyledContainer>
       <StyledPaper>
         <Typography variant="h4" color="primary" gutterBottom>
-          Admin Registration
+          New User Registration
         </Typography>
         <form onSubmit={handleRegistration} style={{ width: "100%" }}>
           <TextField

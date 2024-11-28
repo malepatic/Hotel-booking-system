@@ -81,12 +81,14 @@ const Login = () => {
         try {
             const response = await axios.post('http://localhost:5001/api/auth/login', {
                 email: identifier,
-                password,
+                password: password,
             });
 
             if (response.data.token) {
+                // Store token and role in localStorage
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('role', response.data.role);
+
                 setSnackbarMessage('Login successful! Redirecting...');
                 setSnackbarSeverity('success');
                 setOpenSnackbar(true);
@@ -94,7 +96,16 @@ const Login = () => {
                 // Redirect based on role
                 setTimeout(() => {
                     const role = response.data.role;
-                    navigate(role === 'admin' ? '/admin/dashboard' : '/user/dashboard');
+                    if (role === 'admin') {
+                        navigate('/admin/dashboard');
+                    } else if (role === 'user') {
+                        navigate('/user/dashboard');
+                    } else {
+                        console.error('Received an unknown role:', role);
+                        setSnackbarMessage('Login failed. Unknown role received.');
+                        setSnackbarSeverity('error');
+                        setOpenSnackbar(true);
+                    }
                 }, 1500);
             } else {
                 throw new Error('Login failed: No token received.');

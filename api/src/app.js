@@ -6,6 +6,8 @@ const cors = require("cors");
 // Load environment variables
 dotenv.config();
 
+const userRoutes = require("./routes/userRoutes");
+
 // App initialization
 const app = express();
 
@@ -29,13 +31,15 @@ mongoose
 const authRoutes = require("./routes/authRoutes");
 const hotelRoutes = require("./routes/hotelRoutes");
 const roomRoutes = require("./routes/roomRoutes");
-const bookingRoutes = require("./routes/bookingRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/rooms", roomRoutes);
-app.use("/api/bookings", bookingRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/users", userRoutes);
 
 module.exports = app;

@@ -93,20 +93,19 @@ const Login = () => {
                 setSnackbarSeverity('success');
                 setOpenSnackbar(true);
 
+                const role = response.data.role;
+
                 // Redirect based on role
-                setTimeout(() => {
-                    const role = response.data.role;
-                    if (role === 'admin') {
-                        navigate('/admin/dashboard');
-                    } else if (role === 'user') {
-                        navigate('/user/dashboard');
-                    } else {
-                        console.error('Received an unknown role:', role);
-                        setSnackbarMessage('Login failed. Unknown role received.');
-                        setSnackbarSeverity('error');
-                        setOpenSnackbar(true);
-                    }
-                }, 1500);
+                if (role === 'admin') {
+                    navigate('/admin/home');
+                } else if (role === 'user') {
+                    navigate('/user/dashboard');
+                } else {
+                    console.error('Received an unknown role:', role);
+                    setSnackbarMessage('Login failed. Unknown role received.');
+                    setSnackbarSeverity('error');
+                    setOpenSnackbar(true);
+                }        
             } else {
                 throw new Error('Login failed: No token received.');
             }

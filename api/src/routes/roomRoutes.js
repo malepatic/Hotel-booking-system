@@ -23,4 +23,38 @@ router.post("/create", upload.array("images", 5), async (req, res) => {
     }
 });
 
+router.get("/all", async (req, res) => {
+    try {
+        const rooms = await Room.find();
+        res.status(200).json({ success: true, rooms });
+    } catch (error) {
+        console.error("Error fetching rooms:", error);
+        res.status(500).json({ success: false, message: "Error fetching rooms", error: error.message });
+    }
+});
+
+router.get("/metrics", async (req, res) => {
+    try {
+        const totalRooms = await Room.countDocuments();
+        const occupiedRooms = await Room.countDocuments({ status: "Occupied" });
+        const vacantRooms = totalRooms - occupiedRooms;
+
+        const totalOrders = await Order.countDocuments();
+
+        res.status(200).json({
+            success: true,
+            metrics: {
+                totalRooms,
+                occupiedRooms,
+                vacantRooms,
+                totalOrders,
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching metrics:", error);
+        res.status(500).json({ success: false, message: "Error fetching metrics" });
+    }
+});
+
+
 module.exports = router;

@@ -3,13 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 
 // Import Pages
 import UserLogin from "./components/UserLogin";
+import AdminHome from "./pages/AdminHome";
 import AdminDashboard from "./pages/AdminDashboard";
-import UserDashboard from "./pages/UserDashboard";
-import RoomManagement from "./pages/RoomManagement";
-import OrderManagement from "./pages/AdminOrders";
-import UserManagement from "./pages/UserManagement";
-import AdminRegistration from "./pages/AdminRegistration";
 import AdminOrders from "./pages/AdminOrders";
+import UserDashboard  from "./pages/UserDashboard";
+import AdminRegistration from "./pages/AdminRegistration";
 
 const App = () => {
   const isAuthenticated = () => !!localStorage.getItem("token");
@@ -18,44 +16,33 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        {/* Default Route */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated() ? <Navigate to="/admin/home" /> : <Navigate to="/login" />
+          }
+        />
+
         {/* Public Routes */}
         <Route path="/login" element={<UserLogin />} />
-        <Route path="/admin/register" element={<AdminRegistration />} />
 
-        {/* Home Route */}
+        {/* Admin Routes */}
         <Route
-          path="/home"
+          path="/admin/home"
           element={
-            isAuthenticated() ? (
-              getRole() === "admin" ? (
-                <Navigate to="/admin/dashboard" />
-              ) : getRole() === "user" ? (
-                <Navigate to="/user/dashboard" />
-              ) : (
-                <Navigate to="/login" />
-              )
+            isAuthenticated() && getRole() === "admin" ? (
+              <AdminHome />
             ) : (
               <Navigate to="/login" />
             )
           }
         />
-
-        {/* Admin Routes */}
         <Route
           path="/admin/dashboard"
           element={
             isAuthenticated() && getRole() === "admin" ? (
               <AdminDashboard />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/admin/rooms"
-          element={
-            isAuthenticated() && getRole() === "admin" ? (
-              <RoomManagement />
             ) : (
               <Navigate to="/login" />
             )
@@ -72,30 +59,17 @@ const App = () => {
           }
         />
         <Route
-          path="/admin/users"
-          element={
-            isAuthenticated() && getRole() === "admin" ? (
-              <UserManagement />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        {/* User Routes */}
-        <Route
-          path="/user/dashboard"
+          path="/admin/register"
           element={
             isAuthenticated() && getRole() === "user" ? (
-              <UserDashboard/>
+              <AdminRegistration />
             ) : (
               <Navigate to="/login" />
             )
           }
         />
 
-        {/* Default Route */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* Catch-All */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

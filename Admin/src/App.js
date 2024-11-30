@@ -70,6 +70,14 @@ const App = () => {
           }
         />
         <Route
+          path="/admin/manage-hotels"
+          element={
+            <PrivateRoute requiredRole="admin">
+              <ManageHotels />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/admin/dashboard"
           element={
             <PrivateRoute requiredRole="admin">

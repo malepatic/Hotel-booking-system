@@ -1,117 +1,104 @@
-import React from "react";
-import { Container, Typography, Grid, Card, CardContent } from "@mui/material";
-import {
-    PieChart,
-    Pie,
-    Cell,
-    ResponsiveContainer,
-    Tooltip,
-    Legend,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-} from "recharts";
+import React, { useEffect, useState } from "react";
+import { Container, Typography, Grid, Card, CardContent, CircularProgress, Alert } from "@mui/material";
+import axios from "axios";
 
-// Sample placeholder data
-const roomData = [
-    { name: "Occupied Rooms", value: 60 },
-    { name: "Vacant Rooms", value: 40 },
-];
+const AdminDashboard = () => {
+  const [metrics, setMetrics] = useState({
+    totalHotels: 0,
+    totalRooms: 0,
+    pendingBookings: 0,
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-const bookingTrends = [
-    { month: "Jan", bookings: 30 },
-    { month: "Feb", bookings: 50 },
-    { month: "Mar", bookings: 45 },
-    { month: "Apr", bookings: 60 },
-    { month: "May", bookings: 80 },
-    { month: "Jun", bookings: 70 },
-];
+  // Fetch metrics from the backend
+  const fetchMetrics = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-const COLORS = ["#0088FE", "#FFBB28"];
+      const token = localStorage.getItem("token"); // Retrieve token from local storage
 
-const AdminHome = () => {
-    return (
-            <Container>
-                <Typography variant="h4" color="primary" gutterBottom maxWidth="lg" sx={{ mt: 4 }}>
-                    Admin Dashboard
-                </Typography>
-                <Grid container spacing={4}>
-                    {/* Total Metrics */}
-                    <Grid item xs={12} md={4}>
-                        <Card>
-                            <CardContent>
-                                <Typography variant="h5">Total Rooms</Typography>
-                                <Typography variant="h6">100</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Card>
-                            <CardContent>
-                                <Typography variant="h5">Total Bookings</Typography>
-                                <Typography variant="h6">300</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Card>
-                            <CardContent>
-                                <Typography variant="h5">Pending Approvals</Typography>
-                                <Typography variant="h6">15</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
+      const headers = {
+        token: `${token}`, // Add Authorization header with token
+      };
 
-                    {/* Pie Chart: Room Distribution */}
-                    <Grid item xs={12} md={6}>
-                        <Typography variant="h6" color="textSecondary">
-                            Room Distribution
-                        </Typography>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <Pie
-                                    data={roomData}
-                                    cx="50%"
-                                    cy="50%"
-                                    labelLine={false}
-                                    outerRadius={100}
-                                    fill="#8884d8"
-                                    dataKey="value"
-                                >
-                                    {roomData.map((entry, index) => (
-                                        <Cell
-                                            key={`cell-${index}`}
-                                            fill={COLORS[index % COLORS.length]}
-                                        />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </Grid>
+      // Fetch hotels count
+      const hotelsResponse = await axios.get("http://localhost:5001/api/hotels", { headers });
+      console.log("Hotels Response:", hotelsResponse.data);
+      const totalHotels = hotelsResponse.data.hotels?.length || 0;
 
-                    {/* Bar Chart: Booking Trends */}
-                    <Grid item xs={12} md={6}>
-                        <Typography variant="h6" color="textSecondary">
-                            Booking Trends
-                        </Typography>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={bookingTrends}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="month" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="bookings" fill="#8884d8" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </Grid>
-                </Grid>
-            </Container>
-    );
+      // Fetch rooms count
+      const roomsResponse = await axios.get("http://localhost:5001/api/rooms/all", { headers });
+      console.log("Rooms Response:", roomsResponse.data);
+      const totalRooms = roomsResponse.data.rooms?.length || 0;
+
+      // Fetch pending bookings
+      const bookingsResponse = await axios.get("http://localhost:5001/api/orders?status=pending", { headers });
+      console.log("Bookings Response:", bookingsResponse.data);
+      const pendingBookings = bookingsResponse.data.bookings?.length || 0;
+
+      setMetrics({
+        totalHotels,
+        totalRooms,
+        pendingBookings,
+      });
+    } catch (err) {
+      console.error("Error fetching metrics:", err);
+      setError("Failed to load metrics. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMetrics();
+  }, []);
+
+  return (
+    <Container sx={{ mt: 4 }}>
+      <Typography variant="h4" color="primary" gutterBottom>
+        Admin Dashboard
+      </Typography>
+      {loading ? (
+        <CircularProgress />
+      ) : error ? (
+        <Alert severity="error">{error}</Alert>
+      ) : (
+        <Grid container spacing={4}>
+          {/* Total Hotels */}
+          <Grid item xs={12} md={4}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5">Total Hotels</Typography>
+                <Typography variant="h6">{metrics.totalHotels}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Total Rooms */}
+          <Grid item xs={12} md={4}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5">Total Rooms</Typography>
+                <Typography variant="h6">{metrics.totalRooms}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Pending Bookings */}
+          <Grid item xs={12} md={4}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5">Pending Bookings</Typography>
+                <Typography variant="h6">{metrics.pendingBookings}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      )}
+    </Container>
+  );
 };
 
-export default AdminHome;
+export default AdminDashboard;

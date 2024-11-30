@@ -1,5 +1,4 @@
 import React from "react";
-import AdminNavbar from "../components/AdminNavBar";
 import { Container, Typography, Grid, Card, CardContent } from "@mui/material";
 import {
     PieChart,
@@ -34,8 +33,6 @@ const COLORS = ["#0088FE", "#FFBB28"];
 
 const AdminHome = () => {
     return (
-        <>
-            <AdminNavbar />
             <Container>
                 <Typography variant="h4" color="primary" gutterBottom maxWidth="lg" sx={{ mt: 4 }}>
                     Admin Dashboard
@@ -114,7 +111,6 @@ const AdminHome = () => {
                     </Grid>
                 </Grid>
             </Container>
-        </>
     );
 };
 

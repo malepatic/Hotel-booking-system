@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import AdminNavbar from "../components/AdminNavBar";
 import {
     Container,
     Typography,
@@ -71,8 +70,6 @@ const AdminOrders = () => {
     }
 
     return (
-    <>
-        <AdminNavbar />
         <Container maxWidth="lg" sx={{ mt: 4 }}>
             <Typography variant="h4" color="primary" gutterBottom>
                 Rooms Management
@@ -127,7 +124,6 @@ const AdminOrders = () => {
                 </Alert>
             </Snackbar>
         </Container>
-    </>
     );
 };
 

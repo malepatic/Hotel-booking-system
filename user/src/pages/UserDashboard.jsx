@@ -52,7 +52,7 @@ const UserDashboard = () => {
                             <CardMedia
                                 component="img"
                                 height="200"
-                                image={`http://localhost:5001/${room.images[0]}`}
+                                image={`http://localhost:5001/${room.images[0]}`} // Adjust based on your image serving setup
                                 alt={room.title}
                             />
                             <CardContent>

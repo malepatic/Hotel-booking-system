@@ -72,7 +72,7 @@ const AdminOrders = () => {
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
             <Typography variant="h4" color="primary" gutterBottom>
-                Orders Management
+                Rooms Management
             </Typography>
             <TableContainer>
                 <Table>

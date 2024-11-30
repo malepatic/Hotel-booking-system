@@ -1,104 +1,103 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-
-// Import Pages
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import UserLogin from "./components/UserLogin";
+import AdminHome from "./pages/AdminHome";
 import AdminDashboard from "./pages/AdminDashboard";
-import UserDashboard from "./pages/UserDashboard";
-import RoomManagement from "./pages/RoomManagement";
-import OrderManagement from "./pages/AdminOrders";
-import UserManagement from "./pages/UserManagement";
-import AdminRegistration from "./pages/AdminRegistration";
 import AdminOrders from "./pages/AdminOrders";
+import UserDashboard from "./pages/UserDashboard";
+import UserHome from "./pages/UserHome";
+import Navbar from "./components/Navbar"; // Unified Navbar
+import UserRegistration from "./pages/UserRegistration";
+// Role-Based Private Route Component
+const PrivateRoute = ({ children, requiredRole }) => {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  if (!token) {
+    // Redirect to login if not authenticated
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role !== requiredRole) {
+    // Redirect to home or an unauthorized page if role doesn't match
+    return <Navigate to={role === "admin" ? "/admin/home" : "/user/home"} replace />;
+  }
+
+  // Render the child component if authentication and role match
+  return children;
+};
 
 const App = () => {
-  const isAuthenticated = () => !!localStorage.getItem("token");
-  const getRole = () => localStorage.getItem("role");
+  const location = useLocation();
+  const showNavbar = location.pathname !== "/login" && location.pathname !== "/register";
 
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<UserLogin />} />
-        <Route path="/admin/register" element={<AdminRegistration />} />
+    <>
+    
+      {/* Conditional Navbar */}
+      {showNavbar && <Navbar />}
 
-        {/* Home Route */}
+      <Routes>
+        {/* Public Route */}
+        
+        <Route path="/login" element={<UserLogin />} />
+        <Route path="/register" element={<UserRegistration />} />
+        {/* User Routes */}
         <Route
-          path="/home"
+          path="/user/home"
           element={
-            isAuthenticated() ? (
-              getRole() === "admin" ? (
-                <Navigate to="/admin/dashboard" />
-              ) : getRole() === "user" ? (
-                <Navigate to="/user/dashboard" />
-              ) : (
-                <Navigate to="/login" />
-              )
-            ) : (
-              <Navigate to="/login" />
-            )
+            <PrivateRoute requiredRole="user">
+              <UserHome />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/user/dashboard"
+          element={
+            <PrivateRoute requiredRole="user">
+              <UserDashboard />
+            </PrivateRoute>
           }
         />
 
         {/* Admin Routes */}
         <Route
-          path="/admin/dashboard"
+          path="/admin/home"
           element={
-            isAuthenticated() && getRole() === "admin" ? (
-              <AdminDashboard />
-            ) : (
-              <Navigate to="/login" />
-            )
+            <PrivateRoute requiredRole="admin">
+              <AdminHome />
+            </PrivateRoute>
           }
         />
         <Route
-          path="/admin/rooms"
+          path="/admin/manage-hotels"
           element={
-            isAuthenticated() && getRole() === "admin" ? (
-              <RoomManagement />
-            ) : (
-              <Navigate to="/login" />
-            )
+            <PrivateRoute requiredRole="admin">
+              <ManageHotels />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <PrivateRoute requiredRole="admin">
+              <AdminDashboard />
+            </PrivateRoute>
           }
         />
         <Route
           path="/admin/orders"
           element={
-            isAuthenticated() && getRole() === "admin" ? (
+            <PrivateRoute requiredRole="admin">
               <AdminOrders />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/admin/users"
-          element={
-            isAuthenticated() && getRole() === "admin" ? (
-              <UserManagement />
-            ) : (
-              <Navigate to="/login" />
-            )
+            </PrivateRoute>
           }
         />
 
-        {/* User Routes */}
-        <Route
-          path="/user/dashboard"
-          element={
-            isAuthenticated() && getRole() === "user" ? (
-              <UserDashboard/>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        {/* Default Route */}
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="*" element={<Navigate to="/login" />} />
+        {/* Catch-All Route */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-    </Router>
+    </>
   );
 };
 

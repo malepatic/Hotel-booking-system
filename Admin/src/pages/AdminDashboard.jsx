@@ -72,7 +72,7 @@ const AdminDashboard = () => {
     return (
       <StyledContainer maxWidth="md">
           <Typography variant="h4" color="primary" gutterBottom>
-              Admin Dashboard - Create Room
+              Post Room Availability
           </Typography>
           <form onSubmit={handleCreateRoom}>
               <TextField

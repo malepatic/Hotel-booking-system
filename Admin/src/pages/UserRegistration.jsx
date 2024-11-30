@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 import {
   Container,
   TextField,
@@ -56,6 +58,8 @@ const AdminRegistration = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+  const navigate = useNavigate(); // Use navigate for redirection
+
   const handleRegistration = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -63,14 +67,15 @@ const AdminRegistration = () => {
     try {
       // API Call for admin registration
       const response = await axios.post("http://localhost:5001/api/auth/register", {
-        userName : userName,
-        fullName : fullName,
-        email : email,
-        phone : phone,
-        password : password
+        userName,
+        fullName,
+        email,
+        phone,
+        password,
       });
-      console.log(response)
-      setSnackbarMessage("Registration successful! Welcome, Admin!");
+
+      console.log(response);
+      setSnackbarMessage("Registration successful! Redirecting to login...");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
 
@@ -80,6 +85,11 @@ const AdminRegistration = () => {
       setEmail("");
       setPhone("");
       setPassword("");
+
+      // Redirect to login after a short delay
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000); // 2-second delay to show the success message
     } catch (error) {
       console.error("Registration failed:", error);
       setSnackbarMessage("Registration failed. Please try again.");

@@ -1,78 +1,95 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-
-// Import Pages
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import UserLogin from "./components/UserLogin";
 import AdminHome from "./pages/AdminHome";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminOrders from "./pages/AdminOrders";
-import UserDashboard  from "./pages/UserDashboard";
-import AdminRegistration from "./pages/AdminRegistration";
+import UserDashboard from "./pages/UserDashboard";
+import UserHome from "./pages/UserHome";
+import Navbar from "./components/Navbar"; // Unified Navbar
+import UserRegistration from "./pages/UserRegistration";
+// Role-Based Private Route Component
+const PrivateRoute = ({ children, requiredRole }) => {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  if (!token) {
+    // Redirect to login if not authenticated
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role !== requiredRole) {
+    // Redirect to home or an unauthorized page if role doesn't match
+    return <Navigate to={role === "admin" ? "/admin/home" : "/user/home"} replace />;
+  }
+
+  // Render the child component if authentication and role match
+  return children;
+};
 
 const App = () => {
-  const isAuthenticated = () => !!localStorage.getItem("token");
-  const getRole = () => localStorage.getItem("role");
+  const location = useLocation();
+  const showNavbar = location.pathname !== "/login" && location.pathname !== "/register";
 
   return (
-    <Router>
+    <>
+    
+      {/* Conditional Navbar */}
+      {showNavbar && <Navbar />}
+
       <Routes>
-        {/* Default Route */}
+        {/* Public Route */}
+        
+        <Route path="/login" element={<UserLogin />} />
+        <Route path="/register" element={<UserRegistration />} />
+        {/* User Routes */}
         <Route
-          path="/"
+          path="/user/home"
           element={
-            isAuthenticated() ? <Navigate to="/admin/home" /> : <Navigate to="/login" />
+            <PrivateRoute requiredRole="user">
+              <UserHome />
+            </PrivateRoute>
           }
         />
-
-        {/* Public Routes */}
-        <Route path="/login" element={<UserLogin />} />
+        <Route
+          path="/user/dashboard"
+          element={
+            <PrivateRoute requiredRole="user">
+              <UserDashboard />
+            </PrivateRoute>
+          }
+        />
 
         {/* Admin Routes */}
         <Route
           path="/admin/home"
           element={
-            isAuthenticated() && getRole() === "admin" ? (
+            <PrivateRoute requiredRole="admin">
               <AdminHome />
-            ) : (
-              <Navigate to="/login" />
-            )
+            </PrivateRoute>
           }
         />
         <Route
           path="/admin/dashboard"
           element={
-            isAuthenticated() && getRole() === "admin" ? (
+            <PrivateRoute requiredRole="admin">
               <AdminDashboard />
-            ) : (
-              <Navigate to="/login" />
-            )
+            </PrivateRoute>
           }
         />
         <Route
           path="/admin/orders"
           element={
-            isAuthenticated() && getRole() === "admin" ? (
+            <PrivateRoute requiredRole="admin">
               <AdminOrders />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/admin/register"
-          element={
-            isAuthenticated() && getRole() === "user" ? (
-              <AdminRegistration />
-            ) : (
-              <Navigate to="/login" />
-            )
+            </PrivateRoute>
           }
         />
 
-        {/* Catch-All */}
-        <Route path="*" element={<Navigate to="/login" />} />
+        {/* Catch-All Route */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-    </Router>
+    </>
   );
 };
 

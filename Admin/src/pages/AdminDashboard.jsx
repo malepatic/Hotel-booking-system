@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Container, TextField, Button, Typography, Box, Snackbar, Alert, MenuItem, Select, InputLabel, FormControl, Slider, } from "@mui/material";
 import {styled} from "@mui/material/styles";
-import AdminNavbar from "../components/AdminNavBar";
 
 
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -71,8 +70,6 @@ const AdminDashboard = () => {
     };
 
     return (
-        <>
-        <AdminNavbar />
       <StyledContainer maxWidth="md">
           <Typography variant="h4" color="primary" gutterBottom>
               Post Room Availability
@@ -173,7 +170,6 @@ const AdminDashboard = () => {
               </Alert>
           </Snackbar>
       </StyledContainer>
-      </>
   );
 };
 

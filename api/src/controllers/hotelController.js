@@ -70,20 +70,31 @@ exports.deleteHotel = async (req, res) => {
   try {
     const { id } = req.params;
 
+    console.log("Attempting to delete hotel with ID:", id);
+
+    // Check if the hotel exists
     const hotel = await Hotel.findById(id);
     if (!hotel) {
+      console.error("Hotel not found:", id);
       return res.status(404).json({ message: "Hotel not found" });
     }
 
-    // Remove all associated rooms before deleting the hotel
+    console.log("Hotel found. Deleting associated rooms...");
+    // Remove all associated rooms
     await Room.deleteMany({ hotelId: id });
-    await hotel.remove();
 
+    console.log("Deleting hotel...");
+    // Delete the hotel document
+    await Hotel.findByIdAndDelete(id);
+
+    console.log("Hotel deleted successfully:", id);
     res.status(200).json({ message: "Hotel deleted successfully" });
   } catch (error) {
+    console.error("Error during hotel deletion:", error.message);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
 // Search hotels by name or location
 exports.searchHotels = async (req, res) => {
   try {

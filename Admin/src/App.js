@@ -4,10 +4,18 @@ import UserLogin from "./components/UserLogin";
 import AdminHome from "./pages/AdminHome";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminOrders from "./pages/AdminOrders";
+import ManageHotels from "./pages/ManageHotels";
+import AddHotelModel from "./pages/AddHotelModel"; // Corrected path for AddHotelModal
 import UserDashboard from "./pages/UserDashboard";
 import UserHome from "./pages/UserHome";
+import ManageRooms from "./pages/ManageRooms";
 import Navbar from "./components/Navbar"; // Unified Navbar
 import UserRegistration from "./pages/UserRegistration";
+import UserBookings from "./pages/UserBookings";
+import SearchRooms from "./pages/SearchRooms";
+import BookRoom from "./pages/BookRoom";
+
+import BookingDetails from "./pages/BookingDetails";
 // Role-Based Private Route Component
 const PrivateRoute = ({ children, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -33,21 +41,33 @@ const App = () => {
 
   return (
     <>
-    
       {/* Conditional Navbar */}
       {showNavbar && <Navbar />}
 
       <Routes>
-        {/* Public Route */}
-        
+        {/* Public Routes */}
+        <Route path="/" element={<UserHome />} />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/register" element={<UserRegistration />} />
+        <Route path="/user/book-room/:roomId" element={<BookRoom />} />
+        <Route path="/user/bookings" element={<UserBookings />} />
+        <Route path="/user/bookings/:bookingId" element={<BookingDetails />} />
+
+
         {/* User Routes */}
         <Route
           path="/user/home"
           element={
             <PrivateRoute requiredRole="user">
               <UserHome />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/user/search-rooms"
+          element={
+            <PrivateRoute requiredRole="user">
+              <SearchRooms />
             </PrivateRoute>
           }
         />
@@ -74,6 +94,22 @@ const App = () => {
           element={
             <PrivateRoute requiredRole="admin">
               <ManageHotels />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/manage-rooms"
+          element={
+            <PrivateRoute requiredRole="admin">
+              <ManageRooms />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/add-hotel"
+          element={
+            <PrivateRoute requiredRole="admin">
+              <AddHotelModel />
             </PrivateRoute>
           }
         />

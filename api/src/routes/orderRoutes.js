@@ -22,7 +22,7 @@ router.put("/:id/cancel", protect, cancelUserBooking); // User-specific cancella
 // Admin-specific routes
 router.get("/", protect, authorize("admin"), getAllBookingsAdmin); // Get all bookings (admin only)
 router.get("/metrics", protect, authorize("admin"), getBookingMetrics);
-router.put("/:id/cancel", protect, cancelBooking); // Cancel a booking
+router.put("/:id/cancel", protect, authorize("admin"), cancelBooking);
 router.put("/:id/approve", protect, authorize("admin"), approveBooking); // Approve a booking (admin only)
 router.put("/:id/reject", protect, authorize("admin"), rejectBooking);
 module.exports = router;

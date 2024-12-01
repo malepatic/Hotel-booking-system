@@ -1,100 +1,123 @@
-import React, { useState, useEffect } from "react";
-import { Form, Row, Col, Card, Button } from "react-bootstrap";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import React, { useState } from "react";
+import { Container, TextField, Button, Grid, Card, CardContent, Typography, Alert } from "@mui/material";
+import axios from "axios";
+import BookRoomModal from "./BookRoomModal"; // Import the modal
 
 const SearchRooms = () => {
-  const [rooms, setRooms] = useState([]); // Original room data
-  const [filteredRooms, setFilteredRooms] = useState([]); // Filtered data based on dates
-  const [startDate, setStartDate] = useState(null); // Start date for travel
-  const [endDate, setEndDate] = useState(null); // End date for travel
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [rooms, setRooms] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch rooms from API
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await fetch("http://localhost:5001/api/rooms"); // Replace with your API
-        const data = await response.json();
-        setRooms(data);
-        setFilteredRooms(data); // Initialize filtered rooms
-      } catch (error) {
-        console.error("Error fetching rooms:", error);
-      }
-    };
+  const isSearchDisabled = !checkIn || !checkOut || new Date(checkOut) < new Date(checkIn);
 
-    fetchRooms();
-  }, []);
-
-  // Handle date filter
-  const handleDateFilter = () => {
-    if (!startDate || !endDate) {
-      alert("Please select both start and end dates.");
-      return;
+  const handleSearch = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await axios.get(
+        `http://localhost:5001/api/rooms/search?checkIn=${checkIn}&checkOut=${checkOut}`
+      );
+      setRooms(response.data.rooms || []);
+    } catch (err) {
+      console.error("Error searching rooms:", err);
+      setError("Failed to fetch rooms. Please try again.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Filter rooms based on availability (adjust logic to match API data structure)
-    const filtered = rooms.filter((room) => {
-      const roomStartDate = new Date(room.availableFrom);
-      const roomEndDate = new Date(room.availableUntil);
-      return startDate >= roomStartDate && endDate <= roomEndDate;
-    });
+  const handleBookNow = (room) => {
+    setSelectedRoom(room);
+    setIsModalOpen(true);
+  };
 
-    setFilteredRooms(filtered);
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedRoom(null);
   };
 
   return (
-    <div className="container mt-4">
-      <h1 className="text-center mb-4">Available Rooms</h1>
-      <Form>
-        <Row className="mb-4">
-          <Col md={4}>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              placeholderText="Select Start Date"
-              className="form-control"
-            />
-          </Col>
-          <Col md={4}>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              placeholderText="Select End Date"
-              className="form-control"
-            />
-          </Col>
-          <Col md={4}>
-            <Button onClick={handleDateFilter} variant="primary" className="w-100">
-              Filter Rooms
-            </Button>
-          </Col>
-        </Row>
-      </Form>
-      <div className="row">
-        {filteredRooms.length > 0 ? (
-          filteredRooms.map((room) => (
-            <div className="col-md-4 mb-4" key={room._id}>
+    <Container>
+      <Typography variant="h4" sx={{ mb: 2 }}>
+        Search Rooms
+      </Typography>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={5}>
+          <TextField
+            type="date"
+            fullWidth
+            label="Check-In Date"
+            value={checkIn}
+            onChange={(e) => setCheckIn(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Grid>
+        <Grid item xs={12} md={5}>
+          <TextField
+            type="date"
+            fullWidth
+            label="Check-Out Date"
+            value={checkOut}
+            onChange={(e) => setCheckOut(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            error={checkOut && new Date(checkOut) < new Date(checkIn)}
+            helperText={
+              checkOut && new Date(checkOut) < new Date(checkIn)
+                ? "Check-out date cannot be before check-in date."
+                : ""
+            }
+          />
+        </Grid>
+        <Grid item xs={12} md={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSearch}
+            fullWidth
+            disabled={isSearchDisabled}
+          >
+            Search
+          </Button>
+        </Grid>
+      </Grid>
+      {loading ? (
+        <Typography>Loading rooms...</Typography>
+      ) : error ? (
+        <Alert severity="error">{error}</Alert>
+      ) : (
+        <Grid container spacing={3}>
+          {rooms.map((room) => (
+            <Grid item xs={12} md={4} key={room._id}>
               <Card>
-                <Card.Img
-                  variant="top"
-                  src={room.image || "https://via.placeholder.com/300x200"}
-                  style={{ height: "200px", objectFit: "cover" }}
-                />
-                <Card.Body>
-                  <Card.Title>{room.name}</Card.Title>
-                  <Card.Text>{room.description}</Card.Text>
-                  <Button variant="primary">Book Now</Button>
-                </Card.Body>
+                <CardContent>
+                  <Typography variant="h6">{room.title}</Typography>
+                  <Typography variant="body2">{room.description}</Typography>
+                  <Typography variant="body2">Price: ${room.price}</Typography>
+                </CardContent>
+                <Button variant="contained" color="primary" onClick={() => handleBookNow(room)}>
+                  Book Now
+                </Button>
               </Card>
-            </div>
-          ))
-        ) : (
-          <div className="text-center w-100">
-            <p>No rooms available for the selected dates.</p>
-          </div>
-        )}
-      </div>
-    </div>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+      {/* Booking Modal */}
+      {selectedRoom && (
+        <BookRoomModal
+          open={isModalOpen}
+          onClose={handleModalClose}
+          room={selectedRoom}
+          checkIn={checkIn}
+          checkOut={checkOut}
+          onBookingComplete={handleSearch} // Refresh room availability after booking
+        />
+      )}
+    </Container>
   );
 };
 

@@ -53,6 +53,12 @@ router.get("/metrics", protect, authorize("admin"), async (req, res) => {
   }
 });
 
+
+// Check room availability
+router.post("/availability", checkRoomAvailability);
+router.get("/:roomId/bookings", protect, authorize("admin"), getRoomBookings);
+router.get("/search", searchRoomsByDate);
+router.get("/keyword", searchRoomsByKeywords);
 // Get a single room by ID
 router.get("/:id", getRoomById);
 
@@ -62,9 +68,4 @@ router.put("/:id", protect, authorize("admin"), upload.array("images", 5), updat
 // Delete a room by ID
 router.delete("/:id", protect, authorize("admin"), deleteRoom);
 
-// Check room availability
-router.post("/availability", checkRoomAvailability);
-router.get("/:roomId/bookings", protect, authorize("admin"), getRoomBookings);
-router.get("/search", searchRoomsByDate);
-router.get("/keyword", searchRoomsByKeywords);
 module.exports = router;

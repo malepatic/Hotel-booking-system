@@ -83,6 +83,7 @@ exports.deleteRoom = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Find the room by ID
     const room = await Room.findById(id);
     if (!room) {
       return res.status(404).json({ message: "Room not found" });
@@ -90,13 +91,17 @@ exports.deleteRoom = async (req, res) => {
 
     // Remove the room ID from the hotel's room list
     await Hotel.findByIdAndUpdate(room.hotelId, { $pull: { rooms: id } });
-    await room.remove();
+
+    // Delete the room
+    await Room.deleteOne({ _id: id });
 
     res.status(200).json({ message: "Room deleted successfully" });
   } catch (error) {
+    console.error("Error deleting room:", error.message); // Log the error for debugging
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
 
 // Check room availability
 exports.checkRoomAvailability = async (req, res) => {
@@ -179,6 +184,7 @@ exports.searchRoomsByDate = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
 
 // Search rooms by keywords
 exports.searchRoomsByKeywords = async (req, res) => {

@@ -10,42 +10,69 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-const AddHotelModal = ({ open, onClose, onHotelAdded }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    address: "",
-    location: "",
-    description: "",
-  });
+// Modal Styling
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
+const AddHotelModel = ({ open, onClose, onHotelAdded }) => {
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [location, setLocation] = useState({ lat: "", lng: "" });
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess("");
+  // Handle form submission
+  const handleAddHotel = async () => {
+    // Validate input
+    if (!name || !address || !description || !location.lat || !location.lng) {
+      setError("All fields are required");
+      return;
+    }
 
     try {
-      const token = localStorage.getItem("token"); // Retrieve token
-      const headers = { Authorization: `Bearer ${token}` };
+      setLoading(true);
+      setError("");
 
+      const token = localStorage.getItem("token"); // Get token from localStorage
+      const headers = {
+        token: `${token}`, // Add Authorization header
+      };
+
+      // API Call to Add Hotel
       const response = await axios.post(
         "http://localhost:5001/api/hotels",
-        formData,
+        {
+          name,
+          address,
+          location,
+          description,
+        },
         { headers }
       );
 
-      setSuccess("Hotel added successfully!");
-      setFormData({ name: "", address: "", location: "", description: "" });
-      onHotelAdded(); // Refresh the hotels list
+      console.log("Hotel added successfully:", response.data);
+
+      // Clear fields and close modal
+      setName("");
+      setAddress("");
+      setLocation({ lat: "", lng: "" });
+      setDescription("");
+      onClose();
+
+      // Refresh hotel list in parent component
+      onHotelAdded();
     } catch (err) {
+      console.error("Error adding hotel:", err);
       setError("Failed to add hotel. Please try again.");
     } finally {
       setLoading(false);
@@ -54,77 +81,66 @@ const AddHotelModal = ({ open, onClose, onHotelAdded }) => {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 400,
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 2,
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
+      <Box sx={modalStyle}>
+        <Typography variant="h6" mb={2}>
           Add New Hotel
         </Typography>
-        {error && <Alert severity="error">{error}</Alert>}
-        {success && <Alert severity="success">{success}</Alert>}
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="Name"
-            name="name"
-            fullWidth
-            margin="normal"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-          <TextField
-            label="Address"
-            name="address"
-            fullWidth
-            margin="normal"
-            value={formData.address}
-            onChange={handleChange}
-            required
-          />
-          <TextField
-            label="Location"
-            name="location"
-            fullWidth
-            margin="normal"
-            value={formData.location}
-            onChange={handleChange}
-            required
-          />
-          <TextField
-            label="Description"
-            name="description"
-            fullWidth
-            margin="normal"
-            multiline
-            rows={3}
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Hotel Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Address"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+        />
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Latitude"
+          value={location.lat}
+          onChange={(e) =>
+            setLocation((prev) => ({ ...prev, lat: e.target.value }))
+          }
+        />
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Longitude"
+          value={location.lng}
+          onChange={(e) =>
+            setLocation((prev) => ({ ...prev, lng: e.target.value }))
+          }
+        />
+        <Box mt={2} display="flex" justifyContent="space-between">
           <Button
-            type="submit"
             variant="contained"
             color="primary"
-            fullWidth
-            sx={{ mt: 2 }}
+            onClick={handleAddHotel}
             disabled={loading}
           >
             {loading ? <CircularProgress size={24} /> : "Add Hotel"}
           </Button>
-        </form>
+          <Button variant="outlined" color="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+        </Box>
       </Box>
     </Modal>
   );
 };
 
-export default AddHotelModal;
+export default AddHotelModel;

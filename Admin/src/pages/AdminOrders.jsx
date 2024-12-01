@@ -23,10 +23,13 @@ const AdminOrders = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
+    // Fetch orders from the backend
     const fetchOrders = async () => {
         try {
-            const response = await axios.get("http://localhost:5001/api/orders/all");
-            setOrders(response.data.orders);
+            const token = localStorage.getItem("token");
+            const headers = { token: `${token}` };
+            const response = await axios.get("http://localhost:5001/api/orders", { headers });
+            setOrders(response.data.bookings || []);
         } catch (error) {
             console.error("Error fetching orders:", error);
         } finally {
@@ -34,17 +37,35 @@ const AdminOrders = () => {
         }
     };
 
+    // Cancel an order
     const handleCancelOrder = async (orderId) => {
         try {
-            const response = await axios.post(`http://localhost:5001/api/orders/cancel/${orderId}`);
-            if (response.data.success) {
-                setSnackbarMessage("Order cancelled successfully!");
-                setSnackbarSeverity("success");
-                setOpenSnackbar(true);
-                fetchOrders(); // Refresh orders after cancellation
-            }
+            const token = localStorage.getItem("token");
+            const headers = { token: `${token}` };
+            await axios.put(`http://localhost:5001/api/orders/${orderId}/cancel`, {}, { headers });
+            setSnackbarMessage("Order canceled successfully!");
+            setSnackbarSeverity("success");
+            setOpenSnackbar(true);
+            fetchOrders(); // Refresh orders after cancelation
         } catch (error) {
-            setSnackbarMessage("Error cancelling order. Please try again.");
+            setSnackbarMessage("Error canceling order. Please try again.");
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+        }
+    };
+
+    // Approve an order
+    const handleApproveOrder = async (orderId) => {
+        try {
+            const token = localStorage.getItem("token");
+            const headers = { token: `${token}` };
+            await axios.put(`http://localhost:5001/api/orders/${orderId}/approve`, {}, { headers });
+            setSnackbarMessage("Order approved successfully!");
+            setSnackbarSeverity("success");
+            setOpenSnackbar(true);
+            fetchOrders();
+        } catch (error) {
+            setSnackbarMessage("Error approving order. Please try again.");
             setSnackbarSeverity("error");
             setOpenSnackbar(true);
         }
@@ -72,7 +93,7 @@ const AdminOrders = () => {
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
             <Typography variant="h4" color="primary" gutterBottom>
-                Rooms Management
+                Manage Orders
             </Typography>
             <TableContainer>
                 <Table>
@@ -80,8 +101,10 @@ const AdminOrders = () => {
                         <TableRow>
                             <TableCell>Customer Name</TableCell>
                             <TableCell>Email</TableCell>
+                            <TableCell>Hotel</TableCell>
                             <TableCell>Room</TableCell>
-                            <TableCell>Date</TableCell>
+                            <TableCell>Check-In</TableCell>
+                            <TableCell>Check-Out</TableCell>
                             <TableCell>Status</TableCell>
                             <TableCell>Actions</TableCell>
                         </TableRow>
@@ -91,15 +114,28 @@ const AdminOrders = () => {
                             <TableRow key={order._id}>
                                 <TableCell>{order.customerName}</TableCell>
                                 <TableCell>{order.customerEmail}</TableCell>
-                                <TableCell>{order.room.title}</TableCell>
-                                <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
+                                <TableCell>{order.hotelId?.name}</TableCell>
+                                <TableCell>{order.roomId?.title}</TableCell>
+                                <TableCell>{new Date(order.checkIn).toLocaleDateString()}</TableCell>
+                                <TableCell>{new Date(order.checkOut).toLocaleDateString()}</TableCell>
                                 <TableCell>{order.status}</TableCell>
                                 <TableCell>
-                                    {order.status !== "Cancelled" && (
+                                    {order.status === "pending" && (
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            onClick={() => handleApproveOrder(order._id)}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            Approve
+                                        </Button>
+                                    )}
+                                    {order.status !== "canceled" && (
                                         <Button
                                             variant="contained"
                                             color="secondary"
                                             onClick={() => handleCancelOrder(order._id)}
+                                            sx={{ mt: 1 }}
                                         >
                                             Cancel
                                         </Button>

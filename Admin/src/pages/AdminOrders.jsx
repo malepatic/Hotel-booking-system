@@ -120,7 +120,7 @@ const AdminOrders = () => {
                                 <TableCell>{new Date(order.checkOut).toLocaleDateString()}</TableCell>
                                 <TableCell>{order.status}</TableCell>
                                 <TableCell>
-                                    {order.status === "pending" && (
+                                    {/* {order.status === "pending" && (
                                         <Button
                                             variant="contained"
                                             color="success"
@@ -129,7 +129,7 @@ const AdminOrders = () => {
                                         >
                                             Approve
                                         </Button>
-                                    )}
+                                    )} */}
                                     {order.status !== "canceled" && (
                                         <Button
                                             variant="contained"

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, TextField, Button, Grid, Card, CardContent, Typography, Alert } from "@mui/material";
+import { Container, TextField, Button, Grid, Card, CardContent, Typography, Alert, CardMedia } from "@mui/material";
 import axios from "axios";
 import BookRoomModal from "./BookRoomModal"; // Import the modal
 
@@ -80,6 +80,7 @@ const SearchRooms = () => {
             label="Keyword (optional)"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
+            placeholder="e.g., Deluxe, Suite"
           />
         </Grid>
         <Grid item xs={12} md={2}>
@@ -103,12 +104,26 @@ const SearchRooms = () => {
           {rooms.map((room) => (
             <Grid item xs={12} md={4} key={room._id}>
               <Card>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={`http://localhost:5001/${room.images[0]}`}
+                  alt={room.title}
+                />
                 <CardContent>
-                  <Typography variant="h6">{room.title}</Typography>
+                  <Typography variant="h6" color="primary">
+                    Hotel: {room.hotelId?.name || "N/A"}
+                  </Typography>
+                  <Typography variant="body2">{room.title}</Typography>
                   <Typography variant="body2">{room.description}</Typography>
                   <Typography variant="body2">Price: ${room.price}</Typography>
                 </CardContent>
-                <Button variant="contained" color="primary" onClick={() => handleBookNow(room)}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleBookNow(room)}
+                  sx={{ m: 1 }}
+                >
                   Book Now
                 </Button>
               </Card>
@@ -116,7 +131,6 @@ const SearchRooms = () => {
           ))}
         </Grid>
       )}
-      {/* Booking Modal */}
       {selectedRoom && (
         <BookRoomModal
           open={isModalOpen}
@@ -124,7 +138,7 @@ const SearchRooms = () => {
           room={selectedRoom}
           checkIn={checkIn}
           checkOut={checkOut}
-          onBookingComplete={handleSearch} // Refresh room availability after booking
+          onBookingComplete={handleSearch}
         />
       )}
     </Container>

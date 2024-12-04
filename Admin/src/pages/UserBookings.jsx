@@ -100,10 +100,12 @@ const UserBookings = () => {
                   <Grid item xs={12} md={6} lg={4} key={booking._id}>
                     <Card>
                       <CardContent>
-                        <Typography variant="h6">
-                          {booking.hotel?.name}
+                        <Typography variant="h6" color="primary">
+                          Hotel: {booking.hotelId?.name || "N/A"}
                         </Typography>
-                        <Typography>Room: {booking.room?.title}</Typography>
+                        <Typography variant="h6">
+                          Room: {booking.roomId?.title || "N/A"}
+                        </Typography>
                         <Typography>
                           Check-In: {new Date(booking.checkIn).toDateString()}
                         </Typography>

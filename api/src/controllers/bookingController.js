@@ -1,6 +1,10 @@
 const Booking = require("../models/Booking");
 const Room = require("../models/Room");
 const Hotel = require("../models/Hotel");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const sendEmail = require("../services/emailService");
+
+
 exports.createBooking = async (req, res) => {
   try {
     const { roomId, bookingDates, customerName, customerEmail } = req.body;
@@ -51,12 +55,20 @@ exports.createBooking = async (req, res) => {
     });
     await room.save();
 
+    // Send booking confirmation email
+    const emailSubject = "Booking Confirmation";
+    const emailText = `Dear ${customerName},\n\nYour booking has been confirmed.\n\nDetails:\nRoom: ${room.title}\nCheck-In: ${checkIn}\nCheck-Out: ${checkOut}\n\nThank you!`;
+    const emailHtml = `<p>Dear <b>${customerName}</b>,</p><p>Your booking has been confirmed.</p><p><b>Details:</b></p><ul><li>Room: ${room.title}</li><li>Check-In: ${checkIn}</li><li>Check-Out: ${checkOut}</li></ul><p>Thank you!</p>`;
+
+    await sendEmail(customerEmail, emailSubject, emailText, emailHtml);
+
     res.status(201).json({ message: "Booking created successfully", booking });
   } catch (error) {
     console.error("Error during booking creation:", error.message); // Log detailed error
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
 
 
 
@@ -178,6 +190,13 @@ exports.cancelUserBooking = async (req, res) => {
       console.log("Room not found for booking ID:", booking.roomId);
     }
 
+    // Send booking cancellation email
+    const emailSubject = "Booking Cancellation";
+    const emailText = `Dear ${booking.customerName},\n\nYour booking has been canceled.\n\nDetails:\nRoom: ${room.title}\nCheck-In: ${booking.checkIn}\nCheck-Out: ${booking.checkOut}\n\nWe apologize for any inconvenience caused.`;
+    const emailHtml = `<p>Dear <b>${booking.customerName}</b>,</p><p>Your booking has been canceled.</p><p><b>Details:</b></p><ul><li>Room: ${room.title}</li><li>Check-In: ${booking.checkIn}</li><li>Check-Out: ${booking.checkOut}</li></ul><p>We apologize for any inconvenience caused.</p>`;
+
+    await sendEmail(booking.customerEmail, emailSubject, emailText, emailHtml);
+
     res.status(200).json({ message: "Booking canceled successfully" });
   } catch (error) {
     console.error("Error canceling booking:", error.message);
@@ -247,6 +266,31 @@ exports.getBookingDetails = async (req, res) => {
   }
 };
 
+exports.getPaymentDetails = async (req, res) => {
+  try {
+    const { session_id } = req.query;
+    if (!session_id) {
+      return res.status(400).json({ message: "Session ID is required" });
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    const roomId = session.metadata.roomId;
+    const room = await Room.findById(roomId).populate("hotelId", "name");
+
+    res.status(200).json({
+      hotelName: room.hotelId.name,
+      roomName: room.title,
+      checkIn: session.metadata.checkIn,
+      checkOut: session.metadata.checkOut,
+      totalPrice: session.amount_total / 100,
+    });
+  } catch (error) {
+    console.error("Error fetching payment details:", error.message);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
+
 exports.getBookingMetrics = async (req, res) => {
   try {
     const totalBookings = await Booking.countDocuments();
@@ -300,5 +344,119 @@ exports.rejectBooking = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
+exports.createStripeSession = async (req, res) => {
+  try {
+    const { roomId, checkIn, checkOut, roomCount } = req.body;
+
+    // Validate request body
+    if (!roomId || !checkIn || !checkOut || !roomCount) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    console.log("Room ID received:", roomId);
+    const room = await Room.findById(roomId).populate("hotelId", "name address");
+    if (!room) {
+      console.error("Room not found for ID:", roomId);
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    console.log("Room found:", room);
+
+    const nights =
+      (new Date(checkOut).getTime() - new Date(checkIn).getTime()) /
+      (1000 * 60 * 60 * 24); // Number of nights
+    const totalPrice = Math.round(nights * room.price * roomCount * 100); // In cents
+
+    console.log("Total Price for booking:", totalPrice / 100);
+
+    // Create Stripe session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: room.title, // Use room details from database
+              description: `Booking at ${room.hotelId?.name || "N/A"}`,
+            },
+            unit_amount: totalPrice, // Stripe requires price in cents
+          },
+          quantity: roomCount,
+        },
+      ],
+      mode: "payment",
+      success_url: `${process.env.FRONTEND_URL}/booking-success?payment_success=true`,
+      cancel_url: `${process.env.FRONTEND_URL}/booking-cancel`,
+    });
+
+    res.status(200).json({ url: session.url });
+  } catch (error) {
+    console.error("Error creating Stripe session:", error.message);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
+
+
+
+exports.stripeWebhook = async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+
+    try {
+      // Extract data from session metadata
+      const { roomId, checkIn, checkOut, roomCount, userId } = session.metadata;
+
+      // Validate room details
+      const room = await Room.findById(roomId);
+      if (!room) {
+        console.error("Room not found during webhook processing.");
+        return res.status(404).send("Room not found");
+      }
+
+      // Create the booking
+      const booking = await Booking.create({
+        userId,
+        roomId,
+        hotelId: room.hotelId,
+        checkIn: new Date(checkIn),
+        checkOut: new Date(checkOut),
+        customerName: session.customer_details.name,
+        customerEmail: session.customer_details.email,
+        status: "confirmed",
+        roomCount,
+      });
+
+      // Update room's booking details
+      room.bookings.push({
+        checkIn: new Date(checkIn),
+        checkOut: new Date(checkOut),
+        bookingId: booking._id,
+      });
+      await room.save();
+
+      console.log("Booking created successfully:", booking._id);
+    } catch (err) {
+      console.error("Error creating booking during webhook processing:", err.message);
+    }
+  }
+
+  res.json({ received: true });
+};
+
+
+
 
 

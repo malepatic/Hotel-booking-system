@@ -83,14 +83,6 @@ const ManageRooms = () => {
         <Alert severity="error">{error}</Alert>
       ) : (
         <>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mb: 2 }}
-            onClick={() => setIsModalOpen(true)}
-          >
-            Add Room
-          </Button>
           <Grid container spacing={3}>
             {rooms.map((room) => (
               <Grid item xs={12} md={6} lg={4} key={room._id}>

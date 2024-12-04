@@ -14,6 +14,9 @@ import UserRegistration from "./pages/UserRegistration";
 import UserBookings from "./pages/UserBookings";
 import SearchRooms from "./pages/SearchRooms";
 import BookRoom from "./pages/BookRoom";
+import BookingSuccess from "./pages/BookingSuccess.jsx";
+import BookingCancel from "./pages/BookingCancel.jsx";
+import StripePayment from "./pages/StripePayment.jsx";
 
 import BookingDetails from "./pages/BookingDetails";
 // Role-Based Private Route Component
@@ -52,6 +55,7 @@ const App = () => {
         <Route path="/user/book-room/:roomId" element={<BookRoom />} />
         <Route path="/user/bookings" element={<UserBookings />} />
         <Route path="/user/bookings/:bookingId" element={<BookingDetails />} />
+        <Route path="/payment" element={<StripePayment />} />
 
 
         {/* User Routes */}
@@ -70,6 +74,22 @@ const App = () => {
               <SearchRooms />
             </PrivateRoute>
           }
+        />
+        <Route 
+          path="/booking-success"
+          element={
+            <PrivateRoute requiredRole="user">
+              <BookingSuccess />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/booking-cancel"
+          element={
+            <PrivateRoute requiredRole="user">
+              <BookingCancel />
+            </PrivateRoute>
+          } 
         />
         <Route
           path="/user/dashboard"
@@ -110,14 +130,6 @@ const App = () => {
           element={
             <PrivateRoute requiredRole="admin">
               <AddHotelModel />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin/dashboard"
-          element={
-            <PrivateRoute requiredRole="admin">
-              <AdminDashboard />
             </PrivateRoute>
           }
         />

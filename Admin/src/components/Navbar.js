@@ -39,7 +39,6 @@ const Navbar = () => {
     userRole === "admin"
       ? [
           { label: "Admin Home", path: "/admin/home" },
-          { label: "Dashboard", path: "/admin/dashboard" },
           { label: "Manage Hotels", path: "/admin/manage-hotels" },
           { label: "Manage Rooms", path: "/admin/manage-rooms" },
           { label: "Manage Orders", path: "/admin/orders" },

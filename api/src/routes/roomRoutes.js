@@ -11,6 +11,7 @@ const {
   getRoomBookings,
   searchRoomsByDate,
   searchRoomsByKeywords,
+  // searchRooms,
 } = require("../controllers/roomController");
 
 // Configure multer for file uploads
@@ -59,6 +60,7 @@ router.post("/availability", checkRoomAvailability);
 router.get("/:roomId/bookings", protect, authorize("admin"), getRoomBookings);
 router.get("/search", searchRoomsByDate);
 router.get("/keyword", searchRoomsByKeywords);
+// router.get("/search", searchRooms);
 // Get a single room by ID
 router.get("/:id", getRoomById);
 

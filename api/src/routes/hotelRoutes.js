@@ -1,10 +1,21 @@
 const express = require("express");
-const { protect, authorize } = require("../middleware/authMiddleware");
-const { addHotel, getHotels } = require("../controllers/hotelController");
+const { 
+  addHotel,
+  getHotels,
+  getHotelById,
+  updateHotel,
+  deleteHotel,
+  searchHotels,
+} = require("../controllers/hotelController");
 
 const router = express.Router();
 
-router.post("/", protect, authorize("admin"), addHotel); // Admin-only route
-router.get("/", getHotels); // Public route
+// Routes
+router.post("/", addHotel); // Add a new hotel
+router.get("/", getHotels); // Get all hotels
+router.get("/:id", getHotelById); // Get a single hotel by ID
+router.put("/:id", updateHotel); // Update a hotel
+router.delete("/:id", deleteHotel); // Delete a hotel
+router.get("/search", searchHotels); // Search hotels
 
 module.exports = router;

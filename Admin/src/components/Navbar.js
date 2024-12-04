@@ -39,12 +39,15 @@ const Navbar = () => {
     userRole === "admin"
       ? [
           { label: "Admin Home", path: "/admin/home" },
-          { label: "Dashboard", path: "/admin/dashboard" },
+          { label: "Manage Hotels", path: "/admin/manage-hotels" },
+          { label: "Manage Rooms", path: "/admin/manage-rooms" },
           { label: "Manage Orders", path: "/admin/orders" },
         ]
       : [
           { label: "Home", path: "/user/home" },
           { label: "Dashboard", path: "/user/dashboard" },
+          { label: "Bookings", path: "/user/bookings" },
+          { label: "Search Rooms", path: "/user/search-rooms" }, // Add search rooms
         ];
 
   return (

@@ -38,7 +38,8 @@ const roomRoutes = require("./routes/roomRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const userRoutes = require("./routes/userRoutes");
-
+const metricsRoutes = require("./routes/metricsRoutes");
+app.use("/api/metrics", metricsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/rooms", roomRoutes);

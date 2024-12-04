@@ -157,8 +157,9 @@ exports.getRoomBookings = async (req, res) => {
 // Search rooms by date
 exports.searchRoomsByDate = async (req, res) => {
   try {
-    const { checkIn, checkOut } = req.query;
+    const { checkIn, checkOut, keyword } = req.query;
 
+    // Validate that check-in and check-out dates are provided
     if (!checkIn || !checkOut) {
       return res.status(400).json({ message: "Check-in and check-out dates are required" });
     }
@@ -166,24 +167,45 @@ exports.searchRoomsByDate = async (req, res) => {
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
 
-    // Query all rooms and filter based on booking dates
-    const rooms = await Room.find().populate("hotelId", "name address");
+    // Construct the keyword query
+    const keywordQuery = keyword
+      ? {
+          $or: [
+            { title: { $regex: `.*${keyword.trim()}.*`, $options: "i" } }, // Case-insensitive, trims whitespace
+            { description: { $regex: `.*${keyword.trim()}.*`, $options: "i" } },
+          ],
+        }
+      : {};
 
+
+    // Query all rooms with optional keyword filtering
+    const rooms = await Room.find(keywordQuery).populate("hotelId", "name address");
+
+
+    if (!rooms.length) {
+      return res.status(200).json({ rooms: [] }); // Return empty if no rooms match the keyword
+    }
+
+    // Filter rooms based on booking dates
     const availableRooms = rooms.filter((room) =>
       room.bookings.every((booking) => {
         const existingCheckIn = new Date(booking.checkIn);
         const existingCheckOut = new Date(booking.checkOut);
 
+        // Room is available if there are no overlapping bookings
         return checkOutDate <= existingCheckIn || checkInDate >= existingCheckOut;
       })
     );
 
+
     res.status(200).json({ rooms: availableRooms });
   } catch (error) {
-    console.error("Error searching rooms by date:", error.message);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
+
+
 
 
 // Search rooms by keywords

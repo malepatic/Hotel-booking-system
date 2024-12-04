@@ -6,6 +6,7 @@ import BookRoomModal from "./BookRoomModal"; // Import the modal
 const SearchRooms = () => {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  const [keyword, setKeyword] = useState(""); // New state for keyword search
   const [rooms, setRooms] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ const SearchRooms = () => {
       setLoading(true);
       setError("");
       const response = await axios.get(
-        `http://localhost:5001/api/rooms/search?checkIn=${checkIn}&checkOut=${checkOut}`
+        `http://localhost:5001/api/rooms/search?checkIn=${checkIn}&checkOut=${checkOut}${keyword ? `&keyword=${keyword}` : ""}`
       );
       setRooms(response.data.rooms || []);
     } catch (err) {
@@ -46,7 +47,7 @@ const SearchRooms = () => {
         Search Rooms
       </Typography>
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={4}>
           <TextField
             type="date"
             fullWidth
@@ -56,7 +57,7 @@ const SearchRooms = () => {
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={4}>
           <TextField
             type="date"
             fullWidth
@@ -70,6 +71,15 @@ const SearchRooms = () => {
                 ? "Check-out date cannot be before check-in date."
                 : ""
             }
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <TextField
+            type="text"
+            fullWidth
+            label="Keyword (optional)"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
           />
         </Grid>
         <Grid item xs={12} md={2}>

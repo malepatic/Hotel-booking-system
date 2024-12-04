@@ -11,6 +11,10 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
@@ -53,20 +57,22 @@ const AdminRegistration = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [otpDialogOpen, setOtpDialogOpen] = useState(false);
 
-  const navigate = useNavigate(); // Use navigate for redirection
+  const navigate = useNavigate();
 
   const handleRegistration = async (event) => {
     event.preventDefault();
     setLoading(true);
 
     try {
-      // API Call for admin registration
-      const response = await axios.post("http://localhost:5001/api/auth/register", {
+      // API Call to request OTP
+      const response = await axios.post("http://localhost:5001/api/auth/otpregister", {
         userName,
         fullName,
         email,
@@ -74,25 +80,51 @@ const AdminRegistration = () => {
         password,
       });
 
-      console.log(response);
+      console.log(response.data);
+      setSnackbarMessage("OTP sent to your email. Please verify.");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      setOtpDialogOpen(true); // Open the OTP verification dialog
+    } catch (error) {
+      console.error("Registration failed:", error);
+      setSnackbarMessage("Failed to send OTP. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setLoading(true);
+    try {
+      // API Call to verify OTP and complete registration
+      const response = await axios.post("http://localhost:5001/api/auth/verify-otp", {
+        email,
+        otp,
+      });
+
+      console.log(response.data);
       setSnackbarMessage("Registration successful! Redirecting to login...");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
 
-      // Reset form fields after successful registration
+      // Close OTP dialog and reset fields
+      setOtpDialogOpen(false);
       setUserName("");
       setFullName("");
       setEmail("");
       setPhone("");
       setPassword("");
+      setOtp("");
 
-      // Redirect to login after a short delay
+      // Redirect to login
       setTimeout(() => {
         navigate("/login");
-      }, 2000); // 2-second delay to show the success message
+      }, 2000);
     } catch (error) {
-      console.error("Registration failed:", error);
-      setSnackbarMessage("Registration failed. Please try again.");
+      console.error("OTP verification failed:", error);
+      setSnackbarMessage("Invalid OTP. Please try again.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     } finally {
@@ -180,6 +212,29 @@ const AdminRegistration = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      {/* OTP Verification Dialog */}
+      <Dialog open={otpDialogOpen} onClose={() => setOtpDialogOpen(false)}>
+        <DialogTitle>Verify OTP</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Enter OTP"
+            variant="outlined"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            required
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleVerifyOtp} variant="contained" color="primary" disabled={loading}>
+            {loading ? <CircularProgress size={24} /> : "Verify"}
+          </Button>
+          <Button onClick={() => setOtpDialogOpen(false)} color="secondary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </StyledContainer>
   );
 };

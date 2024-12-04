@@ -1,72 +1,119 @@
-import React from "react";
-import { Card, Button, Row, Col, Container, Form, InputGroup, Carousel } from "react-bootstrap";
+import React, { useEffect } from "react";
+import {
+  Button,
+  Row,
+  Col,
+  Container,
+  Form,
+  InputGroup,
+  Carousel,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { FaSearch, FaStar, FaHeart } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
+import { Icon, LatLngBounds } from "leaflet";
 
-import poster from "../images/poster.jpg";
-import hotel1 from "../images/hotel1.jpg";
-import hotel2 from "../images/hotel2.jpg";
+import "../Styles/UserHome.scss";
+import "leaflet/dist/leaflet.css";
+import "@changey/react-leaflet-markercluster/dist/styles.min.css";
+
+import h6 from "../images/h6.jpg";
+import h5 from "../images/h5.jpeg";
+import h7 from "../images/h7.jpg";
+import boston from "../images/boston.avif"; // Import the hero background image
+
+// Custom icons for map markers
+const icons = {
+  default: new Icon({
+    iconUrl: "https://via.placeholder.com/38",
+    iconSize: [38, 38],
+  }),
+  city: new Icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+    iconSize: [38, 38],
+  }),
+  park: new Icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/427/427735.png",
+    iconSize: [38, 38],
+  }),
+  history: new Icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/3347/3347485.png",
+    iconSize: [38, 38],
+  }),
+};
+
+// Famous places in Boston
+const markers = [
+  { geocode: [42.3601, -71.0589], popUp: "Boston City Center", type: "city" },
+  { geocode: [42.3554, -71.0656], popUp: "Boston Common", type: "park" },
+  { geocode: [42.3467, -71.0972], popUp: "Fenway Park", type: "history" },
+];
+
+// Top hotels in Boston
+const hotels = [
+  { geocode: [42.3519, -71.0775], popUp: "Fairmont Copley Plaza", type: "city" },
+  { geocode: [42.3512, -71.0674], popUp: "Boston Marriott Copley", type: "city" },
+];
+
+const promotions = [
+  {
+    id: 1,
+    image: h6,
+    // title: "Summer Special",
+    // description: "Complimentary Gifts On booking for five people",
+  },
+  {
+    id: 2,
+    image: h5,
+    // title: "Weekend Getaway",
+    // description: "Get Free Taxi",
+  },
+  {
+    id: 3,
+    image: h7,
+  //   title: "Family Package",
+  //   description: "Get free Breakfast",
+  } 
+];
+
+// Combine all map markers
+const allMarkers = [...markers, ...hotels];
+
+// Fit map bounds
+function FitToBounds({ markers }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (markers.length > 0) {
+      const bounds = new LatLngBounds(markers.map((marker) => marker.geocode));
+      map.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }, [markers, map]);
+
+  return null;
+}
 
 const Home = () => {
   const navigate = useNavigate();
 
-  const hotels = [
-    {
-      id: 1,
-      image: hotel1,
-      title: "Deluxe Room",
-      description: "A luxurious room with all amenities.",
-      rating: 4.8,
-      price: 150,
-    },
-    {
-      id: 2,
-      image: poster,
-      title: "Executive Suite",
-      description: "A spacious suite for a premium experience.",
-      rating: 4.9,
-      price: 250,
-    },
-    {
-      id: 3,
-      image: hotel2,
-      title: "Family Room",
-      description: "Perfect for families with children.",
-      rating: 4.7,
-      price: 200,
-    },
-  ];
-
-  const promotions = [
-    {
-      id: 1,
-      image: "https://source.unsplash.com/random/1600x900/?hotel-room",
-      title: "Summer Special",
-      description: "Complimentary Gifts On booking for five people",
-    },
-    {
-      id: 2,
-      image: "https://source.unsplash.com/random/1600x900/?luxury-hotel",
-      title: "Weekend Getaway",
-      description: "Get Free Taxi",
-    },
-    {
-      id: 3,
-      image: "https://source.unsplash.com/random/1600x900/?hotel-pool",
-      title: "Family Package",
-      description: "Get free Breakfast",
-    },
-  ];
-
   return (
     <Container fluid className="p-0">
-      <div className="hero-section text-white text-center py-5" style={{background: "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://source.unsplash.com/random/1600x900/?hotel) no-repeat center center / cover"}}>
+      {/* Hero Section */}
+      <div
+        className="hero-section text-white text-center py-5"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${boston})`,
+        }}
+      >
         <h1 className="display-4 fw-bold mb-4">Welcome to LivinBoston</h1>
         <p className="lead mb-4">Find your perfect stay in the heart of Boston</p>
-        <Form className="search-form mx-auto" style={{maxWidth: "600px"}}>
+        <Form className="search-form mx-auto" style={{ maxWidth: "600px" }}>
           <InputGroup className="mb-3">
             <Form.Control placeholder="Search" />
-            <InputGroup.Text><FaSearch /></InputGroup.Text>
+            <InputGroup.Text>
+              <FaSearch />
+            </InputGroup.Text>
           </InputGroup>
           <Row>
             <Col>
@@ -76,14 +123,20 @@ const Home = () => {
               <Form.Control type="date" placeholder="Check-out" />
             </Col>
             <Col md={3}>
-              <Button variant="primary" className="w-100" onClick={() => navigate("/search-rooms")}>Search</Button>
+              <Button
+                variant="primary"
+                className="w-100"
+                onClick={() => navigate("/search-rooms")}
+              >
+                Search
+              </Button>
             </Col>
           </Row>
         </Form>
       </div>
 
+      {/* Promotions Section */}
       <Container className="my-5">
-        <h2 className="text-center mb-4">Special Promotions</h2>
         <Carousel className="mb-5">
           {promotions.map((promo) => (
             <Carousel.Item key={promo.id}>
@@ -93,56 +146,53 @@ const Home = () => {
                 alt={promo.title}
                 style={{ height: "400px", objectFit: "cover" }}
               />
-              <Carousel.Caption className="bg-dark bg-opacity-50 rounded">
+              <Carousel.Caption>
                 <h3>{promo.title}</h3>
                 <p>{promo.description}</p>
-                {/* <Button variant="primary" onClick={() => navigate("/search-rooms")}>
-                  Book Now
-                </Button> */}
               </Carousel.Caption>
             </Carousel.Item>
           ))}
         </Carousel>
-
-        <h2 className="text-center mb-4">Explore Our Rooms</h2>
-        <Row className="g-4">
-          {hotels.map((hotel) => (
-            <Col md={4} key={hotel.id}>
-              <Card className="h-100 shadow-sm hover-zoom">
-                <div className="position-relative">
-                  <Card.Img
-                    variant="top"
-                    src={hotel.image}
-                    alt={hotel.title}
-                    style={{ height: "250px", objectFit: "cover" }}
-                  />
-                  <Button variant="light" className="position-absolute top-0 end-0 m-2 rounded-circle p-2">
-                    <FaHeart className="text-danger" />
-                  </Button>
-                </div>
-                <Card.Body>
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <Card.Title className="mb-0">{hotel.title}</Card.Title>
-                    <span className="text-warning">
-                      <FaStar /> {hotel.rating}
-                    </span>
-                  </div>
-                  <Card.Text>{hotel.description}</Card.Text>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className="fw-bold">${hotel.price} / night</span>
-                    <Button
-                      onClick={() => navigate("/search-rooms")}
-                      variant="outline-primary"
-                    >
-                      Book Now
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
       </Container>
+
+      {/* Map Section */}
+      <div className="map-section my-5 d-flex justify-content-center">
+        <div
+          style={{
+            width: "90%", // Adjust the width of the map container
+            height: "500px", // Adjust the height of the map container
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", // Add shadow for styling
+            border: "1px solid #ccc", // Add border for styling
+            borderRadius: "8px", // Add border radius for smooth corners
+            overflow: "hidden", // Clip any overflow from the map container
+          }}
+        >
+          <MapContainer
+            center={[42.3601, -71.0589]}
+            zoom={13}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <FitToBounds markers={allMarkers} />
+            <MarkerClusterGroup chunkedLoading>
+              {allMarkers.map((marker, index) => (
+                <Marker
+                  key={index}
+                  position={marker.geocode}
+                  icon={icons[marker.type] || icons.default}
+                >
+                  <Popup>
+                    <strong>{marker.popUp}</strong>
+                  </Popup>
+                </Marker>
+              ))}
+            </MarkerClusterGroup>
+          </MapContainer>
+        </div>
+      </div>
     </Container>
   );
 };

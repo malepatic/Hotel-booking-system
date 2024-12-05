@@ -1,103 +1,129 @@
-import React, { useState } from 'react';
-import { 
-  TextField, Button, Grid, Typography, Box, Container, Paper, Snackbar, IconButton,
-  ThemeProvider, createTheme
-} from '@mui/material';
-import { 
-  Send as SendIcon, 
-  Person as PersonIcon, 
-  Email as EmailIcon, 
-  Message as MessageIcon, 
-  Close as CloseIcon 
-} from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
+import React, { useState } from "react";
+import {
+  TextField,
+  Button,
+  Grid,
+  Typography,
+  Box,
+  Container,
+  Paper,
+  Snackbar,
+  IconButton,
+  ThemeProvider,
+  createTheme,
+} from "@mui/material";
+import {
+  Send as SendIcon,
+  Person as PersonIcon,
+  Email as EmailIcon,
+  Message as MessageIcon,
+  Close as CloseIcon,
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
 
 // Create a custom theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2196f3',
-      light: '#64b5f6',
-      dark: '#1976d2',
+      main: "#4CAF50",
+      light: "#81C784",
+      dark: "#388E3C",
     },
     secondary: {
-      main: '#f50057',
+      main: "#FF5722",
     },
+    background: {
+      default: "#F9F9F9",
+    },
+  },
+  typography: {
+    fontFamily: "'Roboto', sans-serif",
   },
 });
 
 // Styled components
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
-  borderRadius: 16,
-  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
-  background: 'linear-gradient(145deg, #ffffff, #f0f0f0)',
+  borderRadius: 12,
+  background: "linear-gradient(145deg, #ffffff, #f3f3f3)",
+  boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)",
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
       borderColor: theme.palette.primary.light,
     },
-    '&:hover fieldset': {
+    "&:hover fieldset": {
       borderColor: theme.palette.primary.main,
     },
-    '&.Mui-focused fieldset': {
+    "&.Mui-focused fieldset": {
       borderColor: theme.palette.primary.dark,
     },
   },
 }));
 
-const AnimatedButton = styled(Button)(({ theme }) => ({
-  transition: 'transform 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'scale(1.05)',
+const GradientButton = styled(Button)(({ theme }) => ({
+  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+  "&:hover": {
+    transform: "translateY(-3px)",
+    boxShadow: "0 8px 15px rgba(0, 0, 0, 0.2)",
   },
 }));
 
 const ContactPage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !email || !message) {
-      setError('All fields are required');
+      setError("All fields are required");
     } else {
-      setError('');
-      setSnackbarMessage('Your message has been sent!');
+      setError("");
+      setSnackbarMessage("Your message has been sent!");
       setSnackbarOpen(true);
-      setName('');
-      setEmail('');
-      setMessage('');
+      setName("");
+      setEmail("");
+      setMessage("");
     }
   };
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setSnackbarOpen(false);
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
-      <Box sx={{ textAlign: 'center', marginBottom: 6 }}>
-        <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', textShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}>
-          Get in Touch
+    <Container maxWidth="md" sx={{ mt: 6, mb: 6 }}>
+      {/* Page Header */}
+      <Box textAlign="center" mb={5}>
+        <Typography
+          variant="h3"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            color: "primary.main",
+            textShadow: "1px 1px 3px rgba(0,0,0,0.1)",
+          }}
+        >
+          Contact Us
         </Typography>
-        <Typography variant="h6" color="textSecondary" sx={{ maxWidth: '600px', margin: 'auto' }}>
-          We're excited to hear from you! Fill out the form below and we'll get back to you as soon as possible.
+        <Typography variant="h6" color="textSecondary" sx={{ maxWidth: 600, mx: "auto" }}>
+          We'd love to hear from you! Fill out the form below, and we'll get back to you as soon as possible.
         </Typography>
       </Box>
 
-      <StyledPaper elevation={3}>
+      {/* Form Section */}
+      <StyledPaper>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={4}>
+          <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <StyledTextField
                 label="Full Name"
@@ -136,53 +162,48 @@ const ContactPage = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 required
                 InputProps={{
-                  startAdornment: <MessageIcon color="primary" sx={{ mr: 1, alignSelf: 'flex-start', mt: 2 }} />,
+                  startAdornment: <MessageIcon color="primary" sx={{ mr: 1, mt: 1 }} />,
                 }}
               />
             </Grid>
           </Grid>
 
+          {/* Error Message */}
           {error && (
-            <Typography color="error" align="center" sx={{ marginTop: 2, fontWeight: 'bold' }}>
+            <Typography color="error" align="center" sx={{ mt: 2, fontWeight: "bold" }}>
               {error}
             </Typography>
           )}
 
-          <Box sx={{ textAlign: 'center', marginTop: 4 }}>
-            <AnimatedButton
+          {/* Submit Button */}
+          <Box textAlign="center" mt={4}>
+            <GradientButton
               variant="contained"
               color="primary"
               type="submit"
               endIcon={<SendIcon />}
               sx={{
-                padding: '12px 24px',
-                fontSize: '1.1rem',
-                borderRadius: '30px',
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                background: 'linear-gradient(45deg, #2196f3, #21cbf3)',
-                '&:hover': {
-                  background: 'linear-gradient(45deg, #21cbf3, #2196f3)',
-                },
+                px: 4,
+                py: 1.5,
+                fontSize: "1rem",
+                borderRadius: "30px",
+                background: "linear-gradient(45deg, #4caf50, #81c784)",
               }}
             >
               Send Message
-            </AnimatedButton>
+            </GradientButton>
           </Box>
         </form>
       </StyledPaper>
 
-      <Snackbar 
-        open={snackbarOpen} 
-        autoHideDuration={6000} 
+      {/* Snackbar Notification */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
         onClose={handleCloseSnackbar}
         message={snackbarMessage}
         action={
-          <IconButton
-            size="small"
-            aria-label="close"
-            color="inherit"
-            onClick={handleCloseSnackbar}
-          >
+          <IconButton size="small" aria-label="close" color="inherit" onClick={handleCloseSnackbar}>
             <CloseIcon fontSize="small" />
           </IconButton>
         }

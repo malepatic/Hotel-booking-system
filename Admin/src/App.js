@@ -10,6 +10,7 @@ import UserDashboard from "./pages/UserDashboard";
 import UserHome from "./pages/UserHome";
 import ManageRooms from "./pages/ManageRooms";
 import Navbar from "./components/Navbar"; // Unified Navbar
+import Footer from "./components/Footer";
 import UserRegistration from "./pages/UserRegistration";
 import UserBookings from "./pages/UserBookings";
 import SearchRooms from "./pages/SearchRooms";
@@ -41,6 +42,7 @@ const PrivateRoute = ({ children, requiredRole }) => {
 const App = () => {
   const location = useLocation();
   const showNavbar = location.pathname !== "/login" && location.pathname !== "/register";
+  const showFooter = location.pathname !== "/login" && location.pathname !== "/register";
 
   return (
     <>
@@ -145,6 +147,8 @@ const App = () => {
         {/* Catch-All Route */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+
+      {showFooter && <Footer />}
     </>
   );
 };

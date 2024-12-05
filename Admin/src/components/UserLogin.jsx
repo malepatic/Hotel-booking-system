@@ -16,8 +16,9 @@ import {
   Alert,
   Box,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { Visibility, VisibilityOff, Email, Lock } from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import backgroundImage from "../images/login.jpg";  // Make sure the path is correct
 
 // Custom theme
 const theme = createTheme({
@@ -37,6 +38,10 @@ const LoginContainer = styled(Container)(({ theme }) => ({
   alignItems: "center",
   minHeight: "100vh",
   backgroundColor: theme.palette.background.default,
+  backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(${backgroundImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
 }));
 
 const LoginPaper = styled(Paper)(({ theme }) => ({
@@ -48,6 +53,8 @@ const LoginPaper = styled(Paper)(({ theme }) => ({
   alignItems: "center",
   borderRadius: theme.shape.borderRadius,
   boxShadow: "0 8px 40px rgba(0, 0, 0, 0.12)",
+  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  backdropFilter: 'blur(10px)',
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -85,7 +92,6 @@ const Login = () => {
       });
 
       if (response.data.success) {
-        // Store token and role in localStorage
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.role);
 
@@ -93,23 +99,7 @@ const Login = () => {
         setSnackbarSeverity("success");
         setOpenSnackbar(true);
 
-        const role = response.data.role;
-
-        console.log("Role received:", role);
-        console.log("Navigating to:", role === "user" ? "/user/home" : "/admin/home");
-
-        // Redirect based on role
-        if (role === "admin") {
-          navigate("/admin/home", { replace: true });
-          console.log("Navigated to /admin/home");
-        } else if (role === "user") {
-          navigate("/user/home", { replace: true });
-          console.log("Navigated to /user/home");
-        } else {
-          setSnackbarMessage("Unknown role received.");
-          setSnackbarSeverity("error");
-          setOpenSnackbar(true);
-        }
+        navigate(response.data.role === "admin" ? "/admin/home" : "/user/home", { replace: true });
       } else {
         throw new Error(response.data.message || "Login failed.");
       }

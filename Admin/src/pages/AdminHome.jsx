@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, LineChart, Line, CartesianGrid } from "recharts";
 import axios from "axios";
+import "../Styles/adminhome.scss"
 
 const COLORS = ["#0088FE", "#FFBB28", "#00C49F", "#FF8042"];
 

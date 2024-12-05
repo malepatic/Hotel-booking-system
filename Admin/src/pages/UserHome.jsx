@@ -4,15 +4,13 @@ import {
   Row,
   Col,
   Container,
-  Form,
-  InputGroup,
   Carousel,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
 import { Icon, LatLngBounds } from "leaflet";
+import { motion } from "framer-motion";
 
 import "../Styles/UserHome.scss";
 import "leaflet/dist/leaflet.css";
@@ -21,7 +19,7 @@ import "@changey/react-leaflet-markercluster/dist/styles.min.css";
 import h6 from "../images/h6.jpg";
 import h5 from "../images/h5.jpeg";
 import h7 from "../images/h7.jpg";
-import boston from "../images/boston.avif"; // Import the hero background image
+import boston from "../images/boston.avif";
 
 // Custom icons for map markers
 const icons = {
@@ -57,24 +55,9 @@ const hotels = [
 ];
 
 const promotions = [
-  {
-    id: 1,
-    image: h6,
-    // title: "Summer Special",
-    // description: "Complimentary Gifts On booking for five people",
-  },
-  {
-    id: 2,
-    image: h5,
-    // title: "Weekend Getaway",
-    // description: "Get Free Taxi",
-  },
-  {
-    id: 3,
-    image: h7,
-  //   title: "Family Package",
-  //   description: "Get free Breakfast",
-  } 
+  { id: 1, image: h6 },
+  { id: 2, image: h5 },
+  { id: 3, image: h7 },
 ];
 
 // Combine all map markers
@@ -100,55 +83,43 @@ const Home = () => {
   return (
     <Container fluid className="p-0">
       {/* Hero Section */}
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
         className="hero-section text-white text-center py-5"
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${boston})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       >
         <h1 className="display-4 fw-bold mb-4">Welcome to LivinBoston</h1>
-        <p className="lead mb-4">Find your perfect stay in the heart of Boston</p>
-        <Form className="search-form mx-auto" style={{ maxWidth: "600px" }}>
-          <InputGroup className="mb-3">
-            <Form.Control placeholder="Search" />
-            <InputGroup.Text>
-              <FaSearch />
-            </InputGroup.Text>
-          </InputGroup>
-          <Row>
-            <Col>
-              <Form.Control type="date" placeholder="Check-in" />
-            </Col>
-            <Col>
-              <Form.Control type="date" placeholder="Check-out" />
-            </Col>
-            <Col md={3}>
-              <Button
-                variant="primary"
-                className="w-100"
-                onClick={() => navigate("/search-rooms")}
-              >
-                Search
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </div>
+        <p className="lead mb-4">Experience luxury and comfort in the heart of Boston</p>
+        <Button
+          variant="primary"
+          size="lg"
+          className="px-5 py-3 fw-bold"
+          onClick={() => navigate("/user/bookings")}
+        >
+          Book Now
+        </Button>
+      </motion.div>
 
       {/* Promotions Section */}
       <Container className="my-5">
-        <Carousel className="mb-5">
+        <Carousel className="mb-5 shadow-lg rounded">
           {promotions.map((promo) => (
             <Carousel.Item key={promo.id}>
               <img
                 className="d-block w-100"
                 src={promo.image}
-                alt={promo.title}
-                style={{ height: "400px", objectFit: "cover" }}
+                alt={`Promotion ${promo.id}`}
+                style={{ height: "500px", objectFit: "cover" }}
               />
               <Carousel.Caption>
-                <h3>{promo.title}</h3>
-                <p>{promo.description}</p>
+                <h3 className="display-6 fw-bold">Exclusive Offer</h3>
+                <p className="lead">Limited time promotion. Book now!</p>
               </Carousel.Caption>
             </Carousel.Item>
           ))}
@@ -156,21 +127,13 @@ const Home = () => {
       </Container>
 
       {/* Map Section */}
-      <div className="map-section my-5 d-flex justify-content-center">
-        <div
-          style={{
-            width: "90%", // Adjust the width of the map container
-            height: "500px", // Adjust the height of the map container
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", // Add shadow for styling
-            border: "1px solid #ccc", // Add border for styling
-            borderRadius: "8px", // Add border radius for smooth corners
-            overflow: "hidden", // Clip any overflow from the map container
-          }}
-        >
+      <Container className="my-5">
+        <h2 className="text-center mb-4">Explore Boston</h2>
+        <div className="map-container shadow-lg rounded">
           <MapContainer
             center={[42.3601, -71.0589]}
             zoom={13}
-            style={{ height: "100%", width: "100%" }}
+            style={{ height: "500px", width: "100%" }}
           >
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
@@ -192,7 +155,25 @@ const Home = () => {
             </MarkerClusterGroup>
           </MapContainer>
         </div>
-      </div>
+      </Container>
+
+      {/* Featured Amenities */}
+      <Container className="my-5">
+        <h2 className="text-center mb-4">Featured Amenities</h2>
+        <Row className="g-4">
+          {['Spa & Wellness', 'Fine Dining', 'Fitness Center', 'Concierge Service'].map((amenity, index) => (
+            <Col key={index} md={3}>
+              <motion.div 
+                className="bg-light p-4 text-center rounded shadow"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <h5>{amenity}</h5>
+              </motion.div>
+            </Col>
+          ))}
+        </Row>
+      </Container>
     </Container>
   );
 };

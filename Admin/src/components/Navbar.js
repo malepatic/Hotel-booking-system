@@ -15,7 +15,14 @@ import { styled } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
+import HotelIcon from "@mui/icons-material/Hotel";
+import SearchIcon from "@mui/icons-material/Search";
+import InfoIcon from "@mui/icons-material/Info";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import ContactMailIcon from "@mui/icons-material/ContactMail";
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import RoomIcon from '@mui/icons-material/Room';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 
 // Styled Components
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
@@ -59,16 +66,20 @@ const Navbar = () => {
   const navItems =
     userRole === "admin"
       ? [
-          { label: "Admin Home", path: "/admin/home", icon: <HomeIcon /> },
-          { label: "Manage Hotels", path: "/admin/manage-hotels", icon: <HomeIcon /> },
-          { label: "Manage Rooms", path: "/admin/manage-rooms", icon: <HomeIcon /> },
-          { label: "Manage Orders", path: "/admin/orders", icon: <HomeIcon /> },
+          { label: "Home", path: "/admin/home", icon: <PersonOutlineIcon /> },
+          { label: "Manage Hotels", path: "/admin/manage-hotels", icon: <HotelIcon /> },
+          { label: "Manage Rooms", path: "/admin/manage-rooms", icon: <RoomIcon /> },
+          { label: "Manage Orders", path: "/admin/orders", icon: <ReceiptLongIcon /> },
         ]
       : [
           { label: "Home", path: "/user/home", icon: <HomeIcon /> },
-          { label: "Dashboard", path: "/user/dashboard", icon: <HomeIcon /> },
-          { label: "Bookings", path: "/user/bookings", icon: <HomeIcon /> },
-          { label: "Search Rooms", path: "/user/search-rooms", icon: <HomeIcon /> },
+          { label: "Hotels", path: "/user/dashboard", icon: <HotelIcon/> },
+          { label: "Bookings", path: "/user/bookings", icon: <HotelIcon /> },
+          { label: "Search Rooms", path: "/user/search-rooms", icon: <SearchIcon /> },
+          { label: "About Us", path: "/user/Aboutpage", icon: <InfoIcon /> },
+          { label: "Contact Us", path: "/user/Contactus", icon: <ContactMailIcon /> },
+
+
         ];
 
   return (

@@ -139,7 +139,7 @@ const AdminRegistration = () => {
       setOtp("");
 
       setTimeout(() => {
-        navigate("/login");
+        navigate("/");
       }, 2000);
     } catch (error) {
       console.error("OTP verification failed:", error);

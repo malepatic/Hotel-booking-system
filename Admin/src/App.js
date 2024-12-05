@@ -17,8 +17,12 @@ import BookRoom from "./pages/BookRoom";
 import BookingSuccess from "./pages/BookingSuccess.jsx";
 import BookingCancel from "./pages/BookingCancel.jsx";
 import StripePayment from "./pages/StripePayment.jsx";
+import AboutPage from "./pages/Aboutpage.jsx";
+import Footer from "./components/Footer.jsx";
+import Contactus from "./pages/Contactus.jsx"
 
 import BookingDetails from "./pages/BookingDetails";
+
 // Role-Based Private Route Component
 const PrivateRoute = ({ children, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -40,7 +44,8 @@ const PrivateRoute = ({ children, requiredRole }) => {
 
 const App = () => {
   const location = useLocation();
-  const showNavbar = location.pathname !== "/login" && location.pathname !== "/register";
+  const showNavbar = location.pathname !== "/" && location.pathname !== "/register";
+  const showfooter = location.pathname !== "/login" && location.pathname !== "/register";
 
   return (
     <>
@@ -49,7 +54,7 @@ const App = () => {
 
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<UserHome />} />
+        <Route path="/" element={<UserLogin />} />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/register" element={<UserRegistration />} />
         <Route path="/user/book-room/:roomId" element={<BookRoom />} />
@@ -99,6 +104,23 @@ const App = () => {
             </PrivateRoute>
           }
         />
+         <Route
+          path="/user/AboutPage"
+          element={
+            <PrivateRoute requiredRole="user">
+              <AboutPage />
+            </PrivateRoute>
+          }
+        />
+
+<Route
+          path="/user/Contactus"
+          element={
+            <PrivateRoute requiredRole="user">
+              <Contactus />
+            </PrivateRoute>
+          }
+        />
 
         {/* Admin Routes */}
         <Route
@@ -142,9 +164,12 @@ const App = () => {
           }
         />
 
+      
+
         {/* Catch-All Route */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
+      {showfooter && <Footer />}
     </>
   );
 };

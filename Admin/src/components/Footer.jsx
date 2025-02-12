@@ -13,21 +13,21 @@ const Footer = () => {
 
   // Social Media Links
   const socialMediaLinks = [
-    { name: "Facebook", url: "https://www.facebook.com/thenewburyboston", icon: <FacebookIcon /> },
-    { name: "Instagram", url: "https://www.instagram.com/thenewburyboston", icon: <InstagramIcon /> },
-    { name: "Pinterest", url: "https://www.pinterest.com/thenewburyboston", icon: <PinterestIcon /> },
-    { name: "LinkedIn", url: "https://www.linkedin.com/company/thenewburyboston", icon: <LinkedInIcon /> },
+    { name: "Facebook", url: "https://www.facebook.com/LivinBoston", icon: <FacebookIcon /> },
+    { name: "Instagram", url: "https://www.instagram.com/LivinBoston", icon: <InstagramIcon /> },
+    { name: "Pinterest", url: "https://www.pinterest.com/LivinBoston", icon: <PinterestIcon /> },
+    { name: "LinkedIn", url: "https://www.linkedin.com/company/LivinBoston", icon: <LinkedInIcon /> },
   ];
 
   // Footer Links
   const footerLinks = [
-    { name: "Contact", path: "/contact" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Press & Media", path: "/press" },
-    { name: "Careers", path: "/careers" },
-    { name: "Terms of Use", path: "/terms" },
-    { name: "Global Privacy Policy", path: "/privacy" },
-    { name: "Accessibility", path: "/accessibility" },
+    { name: "Contact", path: "/user/Contactus" },
+    { name: "FAQ", path: "/user/AboutPage" },
+    { name: "Press & Media", path: "/user/home" },
+    { name: "Careers", path: "/user/home" },
+    { name: "Terms of Use", path: "/user/home" },
+    { name: "Global Privacy Policy", path: "/user/home" },
+    { name: "Accessibility", path: "/user/home" },
   ];
 
   return (
@@ -46,7 +46,7 @@ const Footer = () => {
             <Typography variant="body2" sx={{ color: "#555" }}>
               Phone:{" "}
               <Link href="tel:6175365700" underline="none" sx={{ color: "primary.main" }}>
-                617-536-5700
+                617-536-5706
               </Link>
             </Typography>
             <Typography variant="body2" sx={{ color: "#555" }}>

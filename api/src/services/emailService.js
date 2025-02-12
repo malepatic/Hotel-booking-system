@@ -4,8 +4,8 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-    user: "tcharan241@gmail.com", // Your email
-    pass: "vqyh rkyx mhvz rqar", // Your email password or app-specific password
+    user: "tcharan241@gmail.com", 
+    pass: "vqyh rkyx mhvz rqar", 
   },
 });
 
@@ -17,7 +17,7 @@ const sendEmail = async (to, subject, text, html) => {
       to,
       subject,
       text,
-      html, // HTML content for rich formatting
+      html, 
     });
     console.log("Email sent successfully!");
   } catch (error) {

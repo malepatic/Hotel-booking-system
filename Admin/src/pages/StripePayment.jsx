@@ -30,7 +30,7 @@ const StripePayment = () => {
         }
 
         const response = await axios.post(
-          "http://localhost:5001/api/orders/stripe-session",
+          "https://livinboston.onrender.com/api/orders/stripe-session",
           {
             roomId,
             checkIn,

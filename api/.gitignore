@@ -9,9 +9,13 @@
 # production
 /build
 
+# Ignore all .env files in any subdirectory
+**/.env
+
 # misc
 .DS_Store
-.env.local
+api/.env
+.env
 .env.development.local
 .env.test.local
 .env.production.local

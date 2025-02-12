@@ -51,7 +51,7 @@ const BookRoomModal = ({ open, onClose, room, checkIn, checkOut, onBookingComple
       localStorage.setItem("bookingDetails", JSON.stringify(bookingDetails));
 
       const response = await axios.post(
-        "http://localhost:5001/api/orders/stripe-session",
+        "https://livinboston.onrender.com/api/orders/stripe-session",
         {
           roomId: room._id,
           checkIn,
@@ -93,7 +93,7 @@ const BookRoomModal = ({ open, onClose, room, checkIn, checkOut, onBookingComple
           </Typography>
           <Box
             component="img"
-            src={`http://localhost:5001/${room.images[0]}`}
+            src={`https://livinboston.onrender.com/${room.images[0]}`}
             alt={room?.title}
             sx={{ width: "100%", height: "200px", objectFit: "cover", mt: 2 }}
           />
@@ -158,7 +158,7 @@ const BookRoomModal = ({ open, onClose, room, checkIn, checkOut, onBookingComple
 
                   const bookingDetails = JSON.parse(localStorage.getItem("bookingDetails"));
                   const response = await axios.post(
-                    "http://localhost:5001/api/orders/book",
+                    "https://livinboston.onrender.com/api/orders/book",
                     bookingDetails,
                     { headers }
                   );

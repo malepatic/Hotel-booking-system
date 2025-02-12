@@ -26,7 +26,7 @@ const BookingDetails = () => {
       const headers = { token: `${token}` };
 
       const response = await axios.get(
-        `http://localhost:5001/api/orders/${bookingId}`,
+        `https://livinboston.onrender.com/api/orders/${bookingId}`,
         { headers }
       );
 

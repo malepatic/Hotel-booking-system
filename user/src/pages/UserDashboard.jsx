@@ -18,7 +18,7 @@ const UserDashboard = () => {
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await axios.get("http://localhost:5001/api/rooms/all");
+                const response = await axios.get("https://livinboston.onrender.com/api/rooms/all");
                 setRooms(response.data.rooms);
             } catch (error) {
                 console.error("Error fetching rooms:", error);
@@ -52,7 +52,7 @@ const UserDashboard = () => {
                             <CardMedia
                                 component="img"
                                 height="200"
-                                image={`http://localhost:5001/${room.images[0]}`} // Adjust based on your image serving setup
+                                image={`https://livinboston.onrender.com/${room.images[0]}`} // Adjust based on your image serving setup
                                 alt={room.title}
                             />
                             <CardContent>

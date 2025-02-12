@@ -94,7 +94,7 @@ const AdminRegistration = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5001/api/auth/otpregister", {
+      const response = await axios.post("https://livinboston.onrender.com/api/auth/otpregister", {
         userName,
         fullName,
         email,
@@ -120,7 +120,7 @@ const AdminRegistration = () => {
   const handleVerifyOtp = async () => {
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5001/api/auth/verify-otp", {
+      const response = await axios.post("https://livinboston.onrender.com/api/auth/verify-otp", {
         email,
         otp,
       });

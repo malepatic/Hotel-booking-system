@@ -50,7 +50,7 @@ const AddHotelModel = ({ open, onClose, onHotelAdded }) => {
 
       // API Call to Add Hotel
       const response = await axios.post(
-        "http://localhost:5001/api/hotels",
+        "https://livinboston.onrender.com/api/hotels",
         {
           name,
           address,

@@ -11,7 +11,7 @@ const Profile = () => {
     // Fetch user details (Replace with your API)
     const fetchUser = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/api/user/profile", {
+        const response = await axios.get("https://livinboston.onrender.com/api/user/profile", {
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
         });
         setUser(response.data);
@@ -43,7 +43,7 @@ const Profile = () => {
     // Update user details (Replace with your API)
     try {
       await axios.put(
-        "http://localhost:5001/api/user/profile",
+        "https://livinboston.onrender.com/api/user/profile",
         { ...user, profilePic },
         { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } }
       );

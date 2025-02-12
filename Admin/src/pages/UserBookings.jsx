@@ -54,7 +54,7 @@ const UserBookings = () => {
       const token = localStorage.getItem("token");
       const headers = { token: `${token}` };
 
-      const response = await axios.get("http://localhost:5001/api/orders/user", {
+      const response = await axios.get("https://livinboston.onrender.com/api/orders/user", {
         headers,
       });
       setBookings(response.data.bookings || []);
@@ -72,7 +72,7 @@ const UserBookings = () => {
       const headers = { token: `${token}` };
 
       await axios.put(
-        `http://localhost:5001/api/orders/${id}/cancel`,
+        `https://livinboston.onrender.com/api/orders/${id}/cancel`,
         {},
         { headers }
       );

@@ -29,7 +29,7 @@ const BookRoom = ({ roomId }) => {
       const headers = { token: `${token}` };
 
       const response = await axios.post(
-        "http://localhost:5001/api/orders/book",
+        "https://livinboston.onrender.com/api/orders/book",
         {
           roomId,
           bookingDates: [checkIn, checkOut],

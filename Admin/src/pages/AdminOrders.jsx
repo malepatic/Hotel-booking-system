@@ -28,7 +28,7 @@ const AdminOrders = () => {
         try {
             const token = localStorage.getItem("token");
             const headers = { token: `${token}` };
-            const response = await axios.get("http://localhost:5001/api/orders", { headers });
+            const response = await axios.get("https://livinboston.onrender.com/api/orders", { headers });
             setOrders(response.data.bookings || []);
         } catch (error) {
             console.error("Error fetching orders:", error);
@@ -42,7 +42,7 @@ const AdminOrders = () => {
         try {
             const token = localStorage.getItem("token");
             const headers = { token: `${token}` };
-            await axios.put(`http://localhost:5001/api/orders/${orderId}/cancel`, {}, { headers });
+            await axios.put(`https://livinboston.onrender.com/api/orders/${orderId}/cancel`, {}, { headers });
             setSnackbarMessage("Order canceled successfully!");
             setSnackbarSeverity("success");
             setOpenSnackbar(true);
@@ -59,7 +59,7 @@ const AdminOrders = () => {
         try {
             const token = localStorage.getItem("token");
             const headers = { token: `${token}` };
-            await axios.put(`http://localhost:5001/api/orders/${orderId}/approve`, {}, { headers });
+            await axios.put(`https://livinboston.onrender.com/api/orders/${orderId}/approve`, {}, { headers });
             setSnackbarMessage("Order approved successfully!");
             setSnackbarSeverity("success");
             setOpenSnackbar(true);

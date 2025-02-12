@@ -36,7 +36,7 @@ const ManageHotels = () => {
       setError("");
       const token = localStorage.getItem("token");
       const headers = { token: `${token}` };
-      const response = await axios.get("http://localhost:5001/api/hotels", { headers });
+      const response = await axios.get("https://livinboston.onrender.com/api/hotels", { headers });
       setHotels(response.data.hotels || []);
     } catch (err) {
       console.error("Error fetching hotels:", err);
@@ -51,7 +51,7 @@ const ManageHotels = () => {
       try {
         const token = localStorage.getItem("token");
         const headers = { token: `${token}` };
-        await axios.delete(`http://localhost:5001/api/hotels/${id}`, { headers });
+        await axios.delete(`https://livinboston.onrender.com/api/hotels/${id}`, { headers });
         setHotels((prevHotels) => prevHotels.filter((hotel) => hotel._id !== id));
         alert("Hotel deleted successfully.");
       } catch (err) {

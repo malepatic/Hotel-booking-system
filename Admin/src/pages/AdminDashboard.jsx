@@ -66,7 +66,7 @@ const AdminDashboard = () => {
         Array.from(images).forEach((file) => formData.append("images", file));
       }
 
-      const response = await axios.post("http://localhost:5001/api/rooms/create", formData, {
+      const response = await axios.post("https://livinboston.onrender.com/api/rooms/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

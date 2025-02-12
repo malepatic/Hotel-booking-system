@@ -27,7 +27,7 @@ const ManageRooms = () => {
     try {
       setLoading(true);
       setError("");
-      const response = await axios.get("http://localhost:5001/api/rooms/all", {
+      const response = await axios.get("https://livinboston.onrender.com/api/rooms/all", {
         headers: { token: `${localStorage.getItem("token")}` },
       });
       setRooms(response.data.rooms || []);
@@ -48,7 +48,7 @@ const ManageRooms = () => {
   
       console.log("Deleting room with ID:", id); // Debug log for room ID
   
-      await axios.delete(`http://localhost:5001/api/rooms/${id}`, { headers });
+      await axios.delete(`https://livinboston.onrender.com/api/rooms/${id}`, { headers });
       console.log("Room deleted successfully.");
       fetchRooms(); // Refetch rooms after deletion
     } catch (error) {

@@ -23,7 +23,7 @@ const BookingSuccess = () => {
       const token = localStorage.getItem("token");
       const headers = { token: `${token}` };
 
-      const response = await axios.post("http://localhost:5001/api/orders/book", bookingDetails, {
+      const response = await axios.post("https://livinboston.onrender.com/api/orders/book", bookingDetails, {
         headers,
       });
 

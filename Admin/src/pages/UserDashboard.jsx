@@ -33,8 +33,8 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const roomResponse = await axios.get("http://localhost:5001/api/rooms/all");
-        const hotelResponse = await axios.get("http://localhost:5001/api/hotels");
+        const roomResponse = await axios.get("https://livinboston.onrender.com/api/rooms/all");
+        const hotelResponse = await axios.get("https://livinboston.onrender.com/api/hotels");
         setRooms(roomResponse.data.rooms);
         setFilteredRooms(roomResponse.data.rooms);
         setHotels(hotelResponse.data.hotels);
@@ -115,7 +115,7 @@ const UserDashboard = () => {
               <CardMedia
                 component="img"
                 height="200"
-                image={`http://localhost:5001/${room.images[0]}`}
+                image={`https://livinboston.onrender.com/${room.images[0]}`}
                 alt={room.title}
               />
               <CardContent>

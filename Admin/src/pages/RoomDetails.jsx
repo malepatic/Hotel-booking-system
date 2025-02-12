@@ -22,7 +22,7 @@ const RoomDetails = () => {
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/hotels/${id}`);
+        const response = await fetch(`https://livinboston.onrender.com/api/hotels/${id}`);
         const data = await response.json();
         setRoom(data);
       } catch (error) {

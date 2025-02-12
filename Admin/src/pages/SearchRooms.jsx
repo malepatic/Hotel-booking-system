@@ -20,7 +20,7 @@ const SearchRooms = () => {
       setLoading(true);
       setError("");
       const response = await axios.get(
-        `http://localhost:5001/api/rooms/search?checkIn=${checkIn}&checkOut=${checkOut}${keyword ? `&keyword=${keyword}` : ""}`
+        `https://livinboston.onrender.com/api/rooms/search?checkIn=${checkIn}&checkOut=${checkOut}${keyword ? `&keyword=${keyword}` : ""}`
       );
       setRooms(response.data.rooms || []);
     } catch (err) {
@@ -107,7 +107,7 @@ const SearchRooms = () => {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={`http://localhost:5001/${room.images[0]}`}
+                  image={`https://livinboston.onrender.com/${room.images[0]}`}
                   alt={room.title}
                 />
                 <CardContent>

@@ -47,7 +47,7 @@ const AddRoomModal = ({ open, onClose, hotelId }) => {
         "Content-Type": "multipart/form-data",
       };
 
-      await axios.post("http://localhost:5001/api/rooms/create", formData, { headers });
+      await axios.post("https://livinboston.onrender.com/api/rooms/create", formData, { headers });
       setSuccess("Room added successfully!");
       onClose(); // Close modal after successful submission
     } catch (err) {

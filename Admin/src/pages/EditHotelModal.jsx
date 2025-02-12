@@ -31,7 +31,7 @@ const EditHotelModal = ({ open, onClose, hotel, onHotelUpdated }) => {
         token: `${token}`,
       };
       await axios.put(
-        `http://localhost:5001/api/hotels/${hotel._id}`,
+        `https://livinboston.onrender.com/api/hotels/${hotel._id}`,
         { name, address, description },
         { headers }
       );

@@ -48,15 +48,15 @@ const AdminDashboard = () => {
         bookingTrendsResponse,
         revenueTrendsResponse,
       ] = await Promise.all([
-        axios.get("http://localhost:5001/api/hotels", { headers }),
-        axios.get("http://localhost:5001/api/rooms/all", { headers }),
-        axios.get("http://localhost:5001/api/orders?status=pending", { headers }),
-        axios.get("http://localhost:5001/api/metrics/bookings/total", { headers }),
-      axios.get("http://localhost:5001/api/metrics/users/active", { headers }),
-      axios.get("http://localhost:5001/api/metrics/users/total", { headers }),
-      axios.get("http://localhost:5001/api/metrics/rooms/distribution", { headers }),
-      axios.get("http://localhost:5001/api/metrics/bookings/trends", { headers }),
-      axios.get("http://localhost:5001/api/metrics/revenue/trends", { headers }),
+        axios.get("https://livinboston.onrender.com/api/hotels", { headers }),
+        axios.get("https://livinboston.onrender.com/api/rooms/all", { headers }),
+        axios.get("https://livinboston.onrender.com/api/orders?status=pending", { headers }),
+        axios.get("https://livinboston.onrender.com/api/metrics/bookings/total", { headers }),
+      axios.get("https://livinboston.onrender.com/api/metrics/users/active", { headers }),
+      axios.get("https://livinboston.onrender.com/api/metrics/users/total", { headers }),
+      axios.get("https://livinboston.onrender.com/api/metrics/rooms/distribution", { headers }),
+      axios.get("https://livinboston.onrender.com/api/metrics/bookings/trends", { headers }),
+      axios.get("https://livinboston.onrender.com/api/metrics/revenue/trends", { headers }),
     ]);
 
       setMetrics({
